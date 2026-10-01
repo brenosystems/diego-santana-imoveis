@@ -1,352 +1,1281 @@
-const header = document.getElementById("header");
-const menuButton = document.getElementById("menuButton");
-const nav = document.getElementById("nav");
+document.addEventListener("DOMContentLoaded", () => {
 
-window.addEventListener("scroll", () => {
-    if (window.scrollY > 50) {
-        header.classList.add("scrolled");
-    } else {
-        header.classList.remove("scrolled");
+    const WHATSAPP_NUMBER = "5511984777871";
+
+
+    /* =========================
+       FORMATAÇÃO DE VALORES
+    ========================= */
+
+    function formatCurrency(value) {
+
+        return new Intl.NumberFormat("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(
+            Math.max(0, Number(value) || 0)
+        );
+
     }
-});
 
 
-menuButton.addEventListener("click", () => {
-    nav.classList.toggle("active");
-});
+    function getValue(id) {
+
+        const element =
+            document.getElementById(id);
+
+        if (!element) return 0;
 
 
-document.querySelectorAll(".nav a").forEach(link => {
-    link.addEventListener("click", () => {
-        nav.classList.remove("active");
-    });
-});
+        const value =
+            element.value
+                .replace(/\s/g, "")
+                .replace(/R\$/g, "")
+                .replace(/\./g, "")
+                .replace(",", ".")
+                .replace(/[^\d.-]/g, "");
 
 
-const formSteps = document.querySelectorAll(".form-step");
-const progressBar = document.getElementById("progressBar");
+        return Math.max(
+            0,
+            Number(value) || 0
+        );
 
-let currentStep = 1;
-let fgtsOption = "nao";
-let firstHomeOption = "sim";
+    }
 
 
-function showStep(step) {
+    function formatInputCurrency(input) {
 
-    formSteps.forEach(formStep => {
-        formStep.classList.remove("active");
-    });
+        if (!input) return;
 
-    const selectedStep = document.querySelector(
-        `.form-step[data-step="${step}"]`
+
+        let value =
+            input.value.replace(/\D/g, "");
+
+
+        if (!value) {
+
+            input.value = "";
+
+            return;
+
+        }
+
+
+        value =
+            Number(value) / 100;
+
+
+        input.value =
+            new Intl.NumberFormat("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(value);
+
+    }
+
+
+    function prepareCurrencyInput(input) {
+
+        if (!input) return;
+
+
+        input.type = "text";
+
+        input.inputMode = "numeric";
+
+
+        input.addEventListener(
+            "input",
+            () => {
+
+                formatInputCurrency(input);
+
+            }
+        );
+
+    }
+
+
+    /* =========================
+       FORMATAÇÃO DE TELEFONE
+    ========================= */
+
+    function formatPhone(input) {
+
+        if (!input) return;
+
+
+        let value =
+            input.value.replace(/\D/g, "");
+
+
+        value =
+            value.substring(0, 11);
+
+
+        if (value.length <= 2) {
+
+            input.value =
+                value
+                    ? `(${value}`
+                    : "";
+
+            return;
+
+        }
+
+
+        if (value.length <= 6) {
+
+            input.value =
+                `(${value.substring(0, 2)}) ${value.substring(2)}`;
+
+            return;
+
+        }
+
+
+        if (value.length <= 10) {
+
+            input.value =
+                `(${value.substring(0, 2)}) ${value.substring(2, 6)}-${value.substring(6)}`;
+
+            return;
+
+        }
+
+
+        input.value =
+            `(${value.substring(0, 2)}) ${value.substring(2, 7)}-${value.substring(7)}`;
+
+    }
+
+
+    function preparePhoneInput(input) {
+
+        if (!input) return;
+
+
+        input.type = "tel";
+
+        input.inputMode = "numeric";
+
+        input.maxLength = 15;
+
+
+        input.addEventListener(
+            "input",
+            () => {
+
+                formatPhone(input);
+
+            }
+        );
+
+    }
+
+
+    /* =========================
+       WHATSAPP
+    ========================= */
+
+    function openWhatsApp(message) {
+
+        const url =
+            `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+
+
+        window.open(
+            url,
+            "_blank",
+            "noopener,noreferrer"
+        );
+
+    }
+
+
+    /* =========================
+       CAMPOS EM REAIS
+    ========================= */
+
+    prepareCurrencyInput(
+        document.getElementById("income")
     );
 
-    if (selectedStep) {
-        selectedStep.classList.add("active");
-    }
-
-    currentStep = step;
-
-    progressBar.style.width = `${step * 25}%`;
-
-    if (step === 4) {
-        calculateQualification();
-    }
-}
-
-
-document.querySelectorAll(".form-next").forEach(button => {
-
-    button.addEventListener("click", () => {
-
-        const nextStep = Number(button.dataset.next);
-
-        if (currentStep === 1) {
-
-            const income = Number(
-                document.getElementById("income").value
-            );
-
-            if (!income || income <= 0) {
-                alert("Informe sua renda mensal para continuar.");
-                return;
-            }
-        }
-
-        if (currentStep === 2) {
-
-            const entry = Number(
-                document.getElementById("entry").value
-            );
-
-            if (entry < 0) {
-                alert("Informe um valor válido para a entrada.");
-                return;
-            }
-        }
-
-        showStep(nextStep);
-
-    });
-
-});
-
-
-document.querySelectorAll("[data-fgts]").forEach(button => {
-
-    button.addEventListener("click", () => {
-
-        document
-            .querySelectorAll("[data-fgts]")
-            .forEach(item => item.classList.remove("selected"));
-
-        button.classList.add("selected");
-
-        fgtsOption = button.dataset.fgts;
-
-        const fgtsValue = document.getElementById("fgtsValue");
-
-        if (fgtsOption === "sim") {
-            fgtsValue.classList.add("show");
-        } else {
-            fgtsValue.classList.remove("show");
-        }
-
-    });
-
-});
-
-
-document.querySelectorAll("[data-first]").forEach(button => {
-
-    button.addEventListener("click", () => {
-
-        document
-            .querySelectorAll("[data-first]")
-            .forEach(item => item.classList.remove("selected"));
-
-        button.classList.add("selected");
-
-        firstHomeOption = button.dataset.first;
-
-        calculateQualification();
-
-    });
-
-});
-
-
-function calculateQualification() {
-
-    const income = Number(
-        document.getElementById("income").value
-    ) || 0;
-
-    const entry = Number(
-        document.getElementById("entry").value
-    ) || 0;
-
-    const fgts = fgtsOption === "sim"
-        ? Number(document.getElementById("fgts").value) || 0
-        : 0;
-
-    const resources = entry + fgts;
-
-    const estimatedFinancing = income * 60;
-
-    const estimatedProperty =
-        estimatedFinancing + resources;
-
-    const minimumValue = 150000;
-
-    const finalValue = Math.max(
-        estimatedProperty,
-        minimumValue
+    prepareCurrencyInput(
+        document.getElementById("entry")
     );
 
-    document.getElementById("estimatedValue").textContent =
-        formatCurrency(finalValue);
+    prepareCurrencyInput(
+        document.getElementById("fgts")
+    );
 
-}
+    prepareCurrencyInput(
+        document.getElementById("propertyValue")
+    );
 
+    prepareCurrencyInput(
+        document.getElementById("condo")
+    );
 
-function formatCurrency(value) {
+    prepareCurrencyInput(
+        document.getElementById("calcProperty")
+    );
 
-    return new Intl.NumberFormat("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-        maximumFractionDigits: 0
-    }).format(value);
+    prepareCurrencyInput(
+        document.getElementById("calcEntry")
+    );
 
-}
-
-
-document
-    .getElementById("qualificationFinish")
-    .addEventListener("click", () => {
-
-        const income = document.getElementById("income").value;
-        const entry = document.getElementById("entry").value;
-        const fgts = document.getElementById("fgts").value || "0";
-
-        const estimated =
-            document.getElementById("estimatedValue").textContent;
-
-        const message =
-            `Olá Diego! Fiz a pré-análise no seu site.%0A%0A` +
-            `Renda familiar: R$ ${income}%0A` +
-            `Entrada: R$ ${entry}%0A` +
-            `FGTS: R$ ${fgts}%0A` +
-            `Primeiro imóvel: ${firstHomeOption === "sim" ? "Sim" : "Não"}%0A` +
-            `Estimativa inicial: ${estimated}%0A%0A` +
-            `Gostaria de conversar sobre as opções.`;
-
-        openWhatsApp(message);
-
-    });
+    prepareCurrencyInput(
+        document.getElementById("calcFgts")
+    );
 
 
-const propertyForm =
-    document.getElementById("propertyForm");
+    /* =========================
+       CAMPOS DE TELEFONE
+    ========================= */
+
+    preparePhoneInput(
+        document.getElementById("clientPhone")
+    );
 
 
-propertyForm.addEventListener("submit", event => {
+    /* =========================
+       HEADER
+    ========================= */
 
-    event.preventDefault();
-
-    const name =
-        document.getElementById("clientName").value;
-
-    const phone =
-        document.getElementById("clientPhone").value;
-
-    const value =
-        document.getElementById("propertyValue").value;
-
-    const region =
-        document.getElementById("region").value;
-
-    const type =
-        document.getElementById("propertyType").value;
-
-    const bedrooms =
-        document.getElementById("bedrooms").value;
-
-    const parking =
-        document.getElementById("parking").value;
-
-    const condo =
-        document.getElementById("condo").value;
-
-    const preferences =
-        document.getElementById("preferences").value;
+    const header =
+        document.querySelector(".header");
 
 
-    const message =
-        `Olá Diego! Meu nome é ${name}.%0A%0A` +
-        `Gostaria de encontrar um imóvel.%0A%0A` +
-        `WhatsApp: ${phone}%0A` +
-        `Valor máximo: R$ ${value || "Não informado"}%0A` +
-        `Região: ${region || "Não informada"}%0A` +
-        `Tipo: ${type || "Não informado"}%0A` +
-        `Quartos: ${bedrooms || "Não informado"}%0A` +
-        `Vaga: ${parking || "Não informado"}%0A` +
-        `Condomínio máximo: R$ ${condo || "Não informado"}%0A` +
-        `Preferências: ${preferences || "Não informadas"}`;
+    function updateHeader() {
+
+        if (header) {
+
+            header.classList.toggle(
+                "scrolled",
+                window.scrollY > 30
+            );
+
+        }
+
+    }
 
 
-    openWhatsApp(message);
-
-});
-
-
-function openWhatsApp(message) {
-
-    const whatsappNumber = "5511999999999";
-
-    const url =
-        `https://wa.me/${whatsappNumber}?text=${message}`;
-
-    window.open(url, "_blank");
-
-}
+    window.addEventListener(
+        "scroll",
+        updateHeader
+    );
 
 
-const calcProperty =
-    document.getElementById("calcProperty");
-
-const calcEntry =
-    document.getElementById("calcEntry");
-
-const calcFgts =
-    document.getElementById("calcFgts");
+    updateHeader();
 
 
-function updateCalculator() {
+    /* =========================
+       MENU MOBILE
+    ========================= */
 
-    const property =
-        Number(calcProperty.value) || 0;
+    const menuToggle =
+        document.querySelector(".menu-toggle");
 
-    const entry =
-        Number(calcEntry.value) || 0;
-
-    const fgts =
-        Number(calcFgts.value) || 0;
-
-    const resources =
-        entry + fgts;
-
-    const financing =
-        Math.max(property - resources, 0);
+    const nav =
+        document.querySelector(".nav");
 
 
-    document.getElementById("financingResult").textContent =
-        formatCurrency(financing);
+    if (menuToggle && nav) {
 
-    document.getElementById("resultProperty").textContent =
-        formatCurrency(property);
+        menuToggle.addEventListener(
+            "click",
+            () => {
 
-    document.getElementById("resultResources").textContent =
-        formatCurrency(resources);
+                nav.classList.toggle("active");
 
-}
+                menuToggle.classList.toggle(
+                    "active"
+                );
 
-
-[calcProperty, calcEntry, calcFgts].forEach(input => {
-
-    input.addEventListener("input", updateCalculator);
-
-});
+            }
+        );
 
 
-updateCalculator();
+        nav.querySelectorAll("a").forEach(
+            link => {
+
+                link.addEventListener(
+                    "click",
+                    () => {
+
+                        nav.classList.remove(
+                            "active"
+                        );
+
+                        menuToggle.classList.remove(
+                            "active"
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+    }
 
 
-document
-    .getElementById("calcWhatsapp")
-    .addEventListener("click", () => {
+    /* =========================
+       PRÉ-ANÁLISE
+    ========================= */
+
+    const quiz = {
+
+        income: 0,
+
+        entry: 0,
+
+        fgts: 0,
+
+        fgtsStatus: "",
+
+        firstHome: "",
+
+        estimatedFinancing: 0,
+
+        estimatedProperty: 0
+
+    };
+
+
+    const steps =
+        [
+            ...document.querySelectorAll(
+                ".form-step"
+            )
+        ];
+
+
+    const progressBar =
+        document.getElementById(
+            "progressBar"
+        );
+
+
+    const estimatedValue =
+        document.getElementById(
+            "estimatedValue"
+        );
+
+
+    const qualificationResult =
+        document.getElementById(
+            "qualificationResult"
+        );
+
+
+    const qualificationFinish =
+        document.getElementById(
+            "qualificationFinish"
+        );
+
+
+    const fgtsValue =
+        document.getElementById(
+            "fgtsValue"
+        );
+
+
+    const fgtsInput =
+        document.getElementById(
+            "fgts"
+        );
+
+
+    function showStep(stepNumber) {
+
+        steps.forEach(step => {
+
+            step.classList.toggle(
+
+                "active",
+
+                Number(
+                    step.dataset.step
+                ) === Number(stepNumber)
+
+            );
+
+        });
+
+
+        if (
+            progressBar &&
+            steps.length
+        ) {
+
+            progressBar.style.width =
+                `${(
+                    Number(stepNumber) /
+                    steps.length
+                ) * 100}%`;
+
+        }
+
+    }
+
+
+    function validateMoneyField(
+        input,
+        message
+    ) {
+
+        if (
+            !input ||
+            getValue(input.id) <= 0
+        ) {
+
+            if (input) {
+
+                input.focus();
+
+                input.setCustomValidity(
+                    message
+                );
+
+                input.reportValidity();
+
+                input.setCustomValidity("");
+
+            }
+
+            return false;
+
+        }
+
+
+        return true;
+
+    }
+
+
+    /* =========================
+       PRÓXIMA PERGUNTA
+    ========================= */
+
+    document
+        .querySelectorAll(".form-next")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const currentStep =
+                        Number(
+                            button
+                                .closest(".form-step")
+                                ?.dataset.step || 1
+                        );
+
+
+                    const nextStep =
+                        Number(
+                            button.dataset.next
+                        );
+
+
+                    if (
+                        currentStep === 1
+                    ) {
+
+                        const incomeInput =
+                            document.getElementById(
+                                "income"
+                            );
+
+
+                        if (
+                            !validateMoneyField(
+                                incomeInput,
+                                "Informe a renda familiar mensal."
+                            )
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        quiz.income =
+                            getValue("income");
+
+                    }
+
+
+                    if (
+                        currentStep === 2
+                    ) {
+
+                        const entryInput =
+                            document.getElementById(
+                                "entry"
+                            );
+
+
+                        if (
+                            !validateMoneyField(
+                                entryInput,
+                                "Informe o valor aproximado da entrada."
+                            )
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        quiz.entry =
+                            getValue("entry");
+
+                    }
+
+
+                    showStep(
+                        nextStep
+                    );
+
+                }
+            );
+
+        });
+
+
+    /* =========================
+       FGTS
+    ========================= */
+
+    document
+        .querySelectorAll("[data-fgts]")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    document
+                        .querySelectorAll(
+                            "[data-fgts]"
+                        )
+                        .forEach(item => {
+
+                            item.classList.remove(
+                                "selected"
+                            );
+
+                        });
+
+
+                    button.classList.add(
+                        "selected"
+                    );
+
+
+                    quiz.fgtsStatus =
+                        button.dataset.fgts;
+
+
+                    if (
+                        quiz.fgtsStatus === "sim"
+                    ) {
+
+                        if (fgtsValue) {
+
+                            fgtsValue.classList.add(
+                                "visible"
+                            );
+
+                        }
+
+
+                        if (fgtsInput) {
+
+                            fgtsInput.focus();
+
+                        }
+
+                    }
+
+                    else {
+
+                        quiz.fgts = 0;
+
+
+                        if (fgtsInput) {
+
+                            fgtsInput.value = "";
+
+                        }
+
+
+                        if (fgtsValue) {
+
+                            fgtsValue.classList.remove(
+                                "visible"
+                            );
+
+                        }
+
+                    }
+
+                }
+            );
+
+        });
+
+
+    /* =========================
+       PRIMEIRO IMÓVEL
+    ========================= */
+
+    document
+        .querySelectorAll("[data-first]")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    document
+                        .querySelectorAll(
+                            "[data-first]"
+                        )
+                        .forEach(item => {
+
+                            item.classList.remove(
+                                "selected"
+                            );
+
+                        });
+
+
+                    button.classList.add(
+                        "selected"
+                    );
+
+
+                    quiz.firstHome =
+                        button.dataset.first;
+
+
+                    quiz.fgts =
+                        quiz.fgtsStatus === "sim"
+                            ? getValue("fgts")
+                            : 0;
+
+
+                    quiz.estimatedFinancing =
+                        Math.round(
+                            quiz.income * 27
+                        );
+
+
+                    const resources =
+                        quiz.entry +
+                        quiz.fgts;
+
+
+                    quiz.estimatedProperty =
+                        quiz.estimatedFinancing +
+                        resources;
+
+
+                    if (estimatedValue) {
+
+                        estimatedValue.textContent =
+                            formatCurrency(
+                                quiz.estimatedProperty
+                            );
+
+                    }
+
+
+                    if (
+                        qualificationResult
+                    ) {
+
+                        qualificationResult.classList.add(
+                            "show"
+                        );
+
+                    }
+
+
+                    if (
+                        qualificationFinish
+                    ) {
+
+                        qualificationFinish.classList.add(
+                            "show"
+                        );
+
+                    }
+
+                }
+            );
+
+        });
+
+
+    /* =========================
+       ENVIAR PRÉ-ANÁLISE
+       PARA O WHATSAPP
+    ========================= */
+
+    if (qualificationFinish) {
+
+        qualificationFinish.addEventListener(
+            "click",
+            () => {
+
+                quiz.fgts =
+                    quiz.fgtsStatus === "sim"
+                        ? getValue("fgts")
+                        : 0;
+
+
+                const fgtsText =
+                    quiz.fgtsStatus === "sim"
+
+                        ? formatCurrency(
+                            quiz.fgts
+                        )
+
+                        : quiz.fgtsStatus === "naosei"
+
+                            ? "Não sei"
+
+                            : "Não";
+
+
+                const firstHomeText =
+
+                    quiz.firstHome === "sim"
+
+                        ? "Sim"
+
+                        : quiz.firstHome === "nao"
+
+                            ? "Não"
+
+                            : "Não informado";
+
+
+                const message = [
+
+                    "Olá, Diego! Fiz a pré-análise pelo seu site e gostaria de conversar sobre meu cenário.",
+
+                    "",
+
+                    `💰 Renda familiar: ${
+                        formatCurrency(
+                            quiz.income
+                        )
+                    }`,
+
+                    `💵 Entrada disponível: ${
+                        formatCurrency(
+                            quiz.entry
+                        )
+                    }`,
+
+                    `🏦 FGTS: ${fgtsText}`,
+
+                    `🏠 Primeiro imóvel: ${
+                        firstHomeText
+                    }`,
+
+                    `📊 Estimativa inicial: ${
+                        formatCurrency(
+                            quiz.estimatedProperty
+                        )
+                    }`,
+
+                    "",
+
+                    "Gostaria de entender melhor minhas possibilidades."
+
+                ].join("\n");
+
+
+                openWhatsApp(
+                    message
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =========================
+       ENCONTRAR MEU IMÓVEL
+    ========================= */
+
+    const propertyForm =
+        document.getElementById(
+            "propertyForm"
+        );
+
+
+    if (propertyForm) {
+
+        propertyForm.addEventListener(
+            "submit",
+            event => {
+
+                event.preventDefault();
+
+
+                const propertyValue =
+                    getValue(
+                        "propertyValue"
+                    );
+
+
+                const region =
+                    document
+                        .getElementById(
+                            "region"
+                        )
+                        ?.value
+                        .trim()
+                    ||
+                    "Não informado";
+
+
+                const propertyType =
+                    document
+                        .getElementById(
+                            "propertyType"
+                        )
+                        ?.value
+                    ||
+                    "Não informado";
+
+
+                const bedrooms =
+                    document
+                        .getElementById(
+                            "bedrooms"
+                        )
+                        ?.value
+                    ||
+                    "Não informado";
+
+
+                const parking =
+                    document
+                        .getElementById(
+                            "parking"
+                        )
+                        ?.value
+                    ||
+                    "Não informado";
+
+
+                const condo =
+                    getValue(
+                        "condo"
+                    );
+
+
+                const preferences =
+                    document
+                        .getElementById(
+                            "preferences"
+                        )
+                        ?.value
+                        .trim()
+                    ||
+                    "Não informado";
+
+
+                const clientName =
+                    document
+                        .getElementById(
+                            "clientName"
+                        )
+                        ?.value
+                        .trim()
+                    ||
+                    "";
+
+
+                const clientPhone =
+                    document
+                        .getElementById(
+                            "clientPhone"
+                        )
+                        ?.value
+                        .trim()
+                    ||
+                    "";
+
+
+                const message = [
+
+                    `Olá, Diego! Meu nome é ${clientName}.`,
+
+                    "",
+
+                    "Estou procurando um imóvel e preenchi meu perfil pelo site:",
+
+                    "",
+
+                    `💰 Valor máximo: ${
+                        formatCurrency(
+                            propertyValue
+                        )
+                    }`,
+
+                    `📍 Região/bairro: ${
+                        region
+                    }`,
+
+                    `🏠 Tipo: ${
+                        propertyType
+                    }`,
+
+                    `🛏️ Quartos: ${
+                        bedrooms
+                    }`,
+
+                    `🚗 Vaga de garagem: ${
+                        parking
+                    }`,
+
+                    `🏢 Condomínio máximo: ${
+                        condo
+                            ? formatCurrency(
+                                condo
+                            )
+                            : "Não informado"
+                    }`,
+
+                    `📋 Preferências: ${
+                        preferences
+                    }`,
+
+                    "",
+
+                    `📱 Meu WhatsApp: ${
+                        clientPhone
+                    }`,
+
+                    "",
+
+                    "Pode me ajudar a encontrar opções dentro desse perfil?"
+
+                ].join("\n");
+
+
+                openWhatsApp(
+                    message
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =========================
+       CALCULADORA
+    ========================= */
+
+    const calcProperty =
+        document.getElementById(
+            "calcProperty"
+        );
+
+
+    const calcEntry =
+        document.getElementById(
+            "calcEntry"
+        );
+
+
+    const calcFgts =
+        document.getElementById(
+            "calcFgts"
+        );
+
+
+    const financingResult =
+        document.getElementById(
+            "financingResult"
+        );
+
+
+    const resultProperty =
+        document.getElementById(
+            "resultProperty"
+        );
+
+
+    const resultResources =
+        document.getElementById(
+            "resultResources"
+        );
+
+
+    const calcWhatsapp =
+        document.getElementById(
+            "calcWhatsapp"
+        );
+
+
+    function updateCalculator() {
 
         const property =
-            Number(calcProperty.value) || 0;
+            getValue(
+                "calcProperty"
+            );
+
 
         const entry =
-            Number(calcEntry.value) || 0;
+            getValue(
+                "calcEntry"
+            );
+
 
         const fgts =
-            Number(calcFgts.value) || 0;
+            getValue(
+                "calcFgts"
+            );
+
+
+        const resources =
+            entry +
+            fgts;
+
 
         const financing =
-            Math.max(property - entry - fgts, 0);
+            Math.max(
+                0,
+                property -
+                resources
+            );
 
 
-        const message =
-            `Olá Diego! Fiz uma simulação no seu site.%0A%0A` +
-            `Valor do imóvel: ${formatCurrency(property)}%0A` +
-            `Entrada: ${formatCurrency(entry)}%0A` +
-            `FGTS: ${formatCurrency(fgts)}%0A` +
-            `Valor aproximado a financiar: ${formatCurrency(financing)}%0A%0A` +
-            `Gostaria de entender melhor minhas possibilidades.`;
+        if (resultProperty) {
 
-        openWhatsApp(message);
+            resultProperty.textContent =
+                formatCurrency(
+                    property
+                );
+
+        }
+
+
+        if (resultResources) {
+
+            resultResources.textContent =
+                formatCurrency(
+                    resources
+                );
+
+        }
+
+
+        if (financingResult) {
+
+            financingResult.textContent =
+                formatCurrency(
+                    financing
+                );
+
+        }
+
+    }
+
+
+    /* =========================
+       INICIAR CALCULADORA ZERADA
+    ========================= */
+
+    if (calcProperty) {
+
+        calcProperty.value = "";
+
+    }
+
+
+    if (calcEntry) {
+
+        calcEntry.value = "";
+
+    }
+
+
+    if (calcFgts) {
+
+        calcFgts.value = "";
+
+    }
+
+
+    if (resultProperty) {
+
+        resultProperty.textContent =
+            "R$ 0,00";
+
+    }
+
+
+    if (resultResources) {
+
+        resultResources.textContent =
+            "R$ 0,00";
+
+    }
+
+
+    if (financingResult) {
+
+        financingResult.textContent =
+            "R$ 0,00";
+
+    }
+
+
+    /* =========================
+       ATUALIZAR CALCULADORA
+    ========================= */
+
+    [
+        calcProperty,
+        calcEntry,
+        calcFgts
+
+    ].forEach(input => {
+
+        if (input) {
+
+            input.addEventListener(
+                "input",
+                updateCalculator
+            );
+
+        }
 
     });
+
+
+    updateCalculator();
+
+
+    /* =========================
+       WHATSAPP DA CALCULADORA
+    ========================= */
+
+    if (calcWhatsapp) {
+
+        calcWhatsapp.addEventListener(
+            "click",
+            () => {
+
+                const property =
+                    getValue(
+                        "calcProperty"
+                    );
+
+
+                const entry =
+                    getValue(
+                        "calcEntry"
+                    );
+
+
+                const fgts =
+                    getValue(
+                        "calcFgts"
+                    );
+
+
+                const resources =
+                    entry +
+                    fgts;
+
+
+                const financing =
+                    Math.max(
+                        0,
+                        property -
+                        resources
+                    );
+
+
+                const message = [
+
+                    "Olá, Diego! Fiz uma simulação inicial pelo seu site.",
+
+                    "",
+
+                    `🏠 Valor do imóvel: ${
+                        formatCurrency(
+                            property
+                        )
+                    }`,
+
+                    `💵 Entrada: ${
+                        formatCurrency(
+                            entry
+                        )
+                    }`,
+
+                    `🏦 FGTS: ${
+                        formatCurrency(
+                            fgts
+                        )
+                    }`,
+
+                    `💰 Recursos informados: ${
+                        formatCurrency(
+                            resources
+                        )
+                    }`,
+
+                    `📊 Valor a financiar: ${
+                        formatCurrency(
+                            financing
+                        )
+                    }`,
+
+                    "",
+
+                    "Gostaria de conversar sobre as condições e possibilidades para esse imóvel."
+
+                ].join("\n");
+
+
+                openWhatsApp(
+                    message
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =========================
+       INICIAR QUIZ
+    ========================= */
+
+    showStep(1);
+
+});
