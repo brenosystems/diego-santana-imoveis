@@ -8,7 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
     ========================= */
 
     function formatCurrency(value) {
-
         return new Intl.NumberFormat("pt-BR", {
             style: "currency",
             currency: "BRL",
@@ -17,166 +16,104 @@ document.addEventListener("DOMContentLoaded", () => {
         }).format(
             Math.max(0, Number(value) || 0)
         );
-
     }
 
 
     function getValue(id) {
-
-        const element =
-            document.getElementById(id);
+        const element = document.getElementById(id);
 
         if (!element) return 0;
 
-
-        const value =
-            element.value
-                .replace(/\s/g, "")
-                .replace(/R\$/g, "")
-                .replace(/\./g, "")
-                .replace(",", ".")
-                .replace(/[^\d.-]/g, "");
-
+        const value = element.value
+            .replace(/\s/g, "")
+            .replace(/R\$/g, "")
+            .replace(/\./g, "")
+            .replace(",", ".")
+            .replace(/[^\d.-]/g, "");
 
         return Math.max(
             0,
             Number(value) || 0
         );
-
     }
 
 
     function formatInputCurrency(input) {
-
         if (!input) return;
 
-
-        let value =
-            input.value.replace(/\D/g, "");
-
+        let value = input.value.replace(/\D/g, "");
 
         if (!value) {
-
             input.value = "";
-
             return;
-
         }
 
+        value = Number(value) / 100;
 
-        value =
-            Number(value) / 100;
-
-
-        input.value =
-            new Intl.NumberFormat("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }).format(value);
-
+        input.value = new Intl.NumberFormat("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(value);
     }
 
 
     function prepareCurrencyInput(input) {
-
         if (!input) return;
 
-
         input.type = "text";
-
         input.inputMode = "numeric";
 
-
-        input.addEventListener(
-            "input",
-            () => {
-
-                formatInputCurrency(input);
-
-            }
-        );
-
+        input.addEventListener("input", () => {
+            formatInputCurrency(input);
+        });
     }
 
 
     /* =========================
-       FORMATAÇÃO DE TELEFONE
+       TELEFONE
     ========================= */
 
     function formatPhone(input) {
-
         if (!input) return;
 
+        let value = input.value.replace(/\D/g, "");
 
-        let value =
-            input.value.replace(/\D/g, "");
-
-
-        value =
-            value.substring(0, 11);
-
+        value = value.substring(0, 11);
 
         if (value.length <= 2) {
-
-            input.value =
-                value
-                    ? `(${value}`
-                    : "";
-
+            input.value = value ? `(${value}` : "";
             return;
-
         }
-
 
         if (value.length <= 6) {
-
             input.value =
                 `(${value.substring(0, 2)}) ${value.substring(2)}`;
-
             return;
-
         }
-
 
         if (value.length <= 10) {
-
             input.value =
                 `(${value.substring(0, 2)}) ${value.substring(2, 6)}-${value.substring(6)}`;
-
             return;
-
         }
-
 
         input.value =
             `(${value.substring(0, 2)}) ${value.substring(2, 7)}-${value.substring(7)}`;
-
     }
 
 
     function preparePhoneInput(input) {
-
         if (!input) return;
 
-
         input.type = "tel";
-
         input.inputMode = "numeric";
-
         input.maxLength = 15;
 
-
-        input.addEventListener(
-            "input",
-            () => {
-
-                formatPhone(input);
-
-            }
-        );
-
+        input.addEventListener("input", () => {
+            formatPhone(input);
+        });
     }
 
 
@@ -185,17 +122,14 @@ document.addEventListener("DOMContentLoaded", () => {
     ========================= */
 
     function openWhatsApp(message) {
-
         const url =
             `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-
 
         window.open(
             url,
             "_blank",
             "noopener,noreferrer"
         );
-
     }
 
 
@@ -203,41 +137,24 @@ document.addEventListener("DOMContentLoaded", () => {
        CAMPOS EM REAIS
     ========================= */
 
-    prepareCurrencyInput(
-        document.getElementById("income")
-    );
-
-    prepareCurrencyInput(
-        document.getElementById("entry")
-    );
-
-    prepareCurrencyInput(
-        document.getElementById("fgts")
-    );
-
-    prepareCurrencyInput(
-        document.getElementById("propertyValue")
-    );
-
-    prepareCurrencyInput(
-        document.getElementById("condo")
-    );
-
-    prepareCurrencyInput(
-        document.getElementById("calcProperty")
-    );
-
-    prepareCurrencyInput(
-        document.getElementById("calcEntry")
-    );
-
-    prepareCurrencyInput(
-        document.getElementById("calcFgts")
-    );
+    [
+        "income",
+        "entry",
+        "fgts",
+        "propertyValue",
+        "condo",
+        "calcProperty",
+        "calcEntry",
+        "calcFgts"
+    ].forEach(id => {
+        prepareCurrencyInput(
+            document.getElementById(id)
+        );
+    });
 
 
     /* =========================
-       CAMPOS DE TELEFONE
+       CAMPO DE TELEFONE
     ========================= */
 
     preparePhoneInput(
@@ -254,24 +171,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     function updateHeader() {
+        if (!header) return;
 
-        if (header) {
-
-            header.classList.toggle(
-                "scrolled",
-                window.scrollY > 30
-            );
-
-        }
-
+        header.classList.toggle(
+            "scrolled",
+            window.scrollY > 30
+        );
     }
 
 
     window.addEventListener(
         "scroll",
-        updateHeader
+        updateHeader,
+        { passive: true }
     );
-
 
     updateHeader();
 
@@ -280,26 +193,63 @@ document.addEventListener("DOMContentLoaded", () => {
        MENU MOBILE
     ========================= */
 
-    const menuToggle =
-        document.querySelector(".menu-toggle");
+    const menuButton =
+        document.getElementById("menuButton");
 
     const nav =
-        document.querySelector(".nav");
+        document.getElementById("nav");
 
 
-    if (menuToggle && nav) {
+    function closeMenu() {
+        if (!menuButton || !nav) return;
 
-        menuToggle.addEventListener(
+        nav.classList.remove("active");
+        menuButton.classList.remove("active");
+
+        menuButton.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+
+        document.body.classList.remove(
+            "menu-open"
+        );
+    }
+
+
+    function toggleMenu() {
+        if (!menuButton || !nav) return;
+
+        const isOpen =
+            nav.classList.toggle("active");
+
+        menuButton.classList.toggle(
+            "active",
+            isOpen
+        );
+
+        menuButton.setAttribute(
+            "aria-expanded",
+            String(isOpen)
+        );
+
+        document.body.classList.toggle(
+            "menu-open",
+            isOpen
+        );
+    }
+
+
+    if (menuButton && nav) {
+
+        menuButton.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+
+        menuButton.addEventListener(
             "click",
-            () => {
-
-                nav.classList.toggle("active");
-
-                menuToggle.classList.toggle(
-                    "active"
-                );
-
-            }
+            toggleMenu
         );
 
 
@@ -308,17 +258,107 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 link.addEventListener(
                     "click",
-                    () => {
+                    closeMenu
+                );
 
-                        nav.classList.remove(
-                            "active"
-                        );
+            }
+        );
 
-                        menuToggle.classList.remove(
-                            "active"
-                        );
 
-                    }
+        document.addEventListener(
+            "keydown",
+            event => {
+
+                if (event.key === "Escape") {
+                    closeMenu();
+                }
+
+            }
+        );
+
+
+        window.addEventListener(
+            "resize",
+            () => {
+
+                if (
+                    window.innerWidth > 900
+                ) {
+                    closeMenu();
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =========================
+       ANIMAÇÕES AO ENTRAR
+       NA TELA
+    ========================= */
+
+    const animatedElements =
+        document.querySelectorAll(
+            ".service-card, " +
+            ".section-heading, " +
+            ".qualification-text, " +
+            ".qualification-card, " +
+            ".property-form, " +
+            ".calculator-intro, " +
+            ".calculator-card, " +
+            ".content-card, " +
+            ".about-content, " +
+            ".about-image, " +
+            ".contact-content, " +
+            ".contact-card"
+        );
+
+
+    if (
+        "IntersectionObserver" in window &&
+        animatedElements.length
+    ) {
+
+        const observer =
+            new IntersectionObserver(
+                entries => {
+
+                    entries.forEach(entry => {
+
+                        if (
+                            entry.isIntersecting
+                        ) {
+
+                            entry.target.classList.add(
+                                "is-visible"
+                            );
+
+                            observer.unobserve(
+                                entry.target
+                            );
+
+                        }
+
+                    });
+
+                },
+                {
+                    threshold: 0.12,
+                    rootMargin: "0px 0px -40px 0px"
+                }
+            );
+
+
+        animatedElements.forEach(
+            element => {
+
+                element.classList.add(
+                    "reveal"
+                );
+
+                observer.observe(
+                    element
                 );
 
             }
@@ -399,13 +439,9 @@ document.addEventListener("DOMContentLoaded", () => {
         steps.forEach(step => {
 
             step.classList.toggle(
-
                 "active",
-
-                Number(
-                    step.dataset.step
-                ) === Number(stepNumber)
-
+                Number(step.dataset.step) ===
+                Number(stepNumber)
             );
 
         });
@@ -455,9 +491,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         }
 
-
         return true;
-
     }
 
 
@@ -487,9 +521,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         );
 
 
-                    if (
-                        currentStep === 1
-                    ) {
+                    if (currentStep === 1) {
 
                         const incomeInput =
                             document.getElementById(
@@ -503,21 +535,16 @@ document.addEventListener("DOMContentLoaded", () => {
                                 "Informe a renda familiar mensal."
                             )
                         ) {
-
                             return;
-
                         }
 
 
                         quiz.income =
                             getValue("income");
-
                     }
 
 
-                    if (
-                        currentStep === 2
-                    ) {
+                    if (currentStep === 2) {
 
                         const entryInput =
                             document.getElementById(
@@ -531,15 +558,12 @@ document.addEventListener("DOMContentLoaded", () => {
                                 "Informe o valor aproximado da entrada."
                             )
                         ) {
-
                             return;
-
                         }
 
 
                         quiz.entry =
                             getValue("entry");
-
                     }
 
 
@@ -606,17 +630,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
                         }
 
-                    }
-
-                    else {
+                    } else {
 
                         quiz.fgts = 0;
 
 
                         if (fgtsInput) {
-
                             fgtsInput.value = "";
-
                         }
 
 
@@ -702,9 +722,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
 
 
-                    if (
-                        qualificationResult
-                    ) {
+                    if (qualificationResult) {
 
                         qualificationResult.classList.add(
                             "show"
@@ -713,9 +731,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
 
 
-                    if (
-                        qualificationFinish
-                    ) {
+                    if (qualificationFinish) {
 
                         qualificationFinish.classList.add(
                             "show"
@@ -731,7 +747,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /* =========================
        ENVIAR PRÉ-ANÁLISE
-       PARA O WHATSAPP
     ========================= */
 
     if (qualificationFinish) {
@@ -761,7 +776,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                 const firstHomeText =
-
                     quiz.firstHome === "sim"
 
                         ? "Sim"
@@ -847,9 +861,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const region =
                     document
-                        .getElementById(
-                            "region"
-                        )
+                        .getElementById("region")
                         ?.value
                         .trim()
                     ||
@@ -858,9 +870,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const propertyType =
                     document
-                        .getElementById(
-                            "propertyType"
-                        )
+                        .getElementById("propertyType")
                         ?.value
                     ||
                     "Não informado";
@@ -868,9 +878,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const bedrooms =
                     document
-                        .getElementById(
-                            "bedrooms"
-                        )
+                        .getElementById("bedrooms")
                         ?.value
                     ||
                     "Não informado";
@@ -878,25 +886,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const parking =
                     document
-                        .getElementById(
-                            "parking"
-                        )
+                        .getElementById("parking")
                         ?.value
                     ||
                     "Não informado";
 
 
                 const condo =
-                    getValue(
-                        "condo"
-                    );
+                    getValue("condo");
 
 
                 const preferences =
                     document
-                        .getElementById(
-                            "preferences"
-                        )
+                        .getElementById("preferences")
                         ?.value
                         .trim()
                     ||
@@ -905,9 +907,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const clientName =
                     document
-                        .getElementById(
-                            "clientName"
-                        )
+                        .getElementById("clientName")
                         ?.value
                         .trim()
                     ||
@@ -916,9 +916,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const clientPhone =
                     document
-                        .getElementById(
-                            "clientPhone"
-                        )
+                        .getElementById("clientPhone")
                         ?.value
                         .trim()
                     ||
@@ -1014,76 +1012,94 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
 
-    const financingResult =
+    const financingValue =
         document.getElementById(
-            "financingResult"
+            "financingValue"
         );
 
 
-    const resultProperty =
+    const entryValue =
         document.getElementById(
-            "resultProperty"
+            "entryValue"
         );
 
 
-    const resultResources =
+    const fgtsValueResult =
         document.getElementById(
-            "resultResources"
+            "fgtsValueResult"
         );
 
 
-    const calcWhatsapp =
+    const totalResources =
         document.getElementById(
-            "calcWhatsapp"
+            "totalResources"
         );
 
 
-    function updateCalculator() {
+    const calculatorWhatsApp =
+        document.getElementById(
+            "calculatorWhatsApp"
+        );
+
+
+    function calculateFinancing() {
 
         const property =
-            getValue(
-                "calcProperty"
-            );
+            getValue("calcProperty");
 
 
         const entry =
-            getValue(
-                "calcEntry"
-            );
+            getValue("calcEntry");
 
 
         const fgts =
-            getValue(
-                "calcFgts"
-            );
-
-
-        const resources =
-            entry +
-            fgts;
+            getValue("calcFgts");
 
 
         const financing =
             Math.max(
                 0,
-                property -
-                resources
+                property - entry - fgts
             );
 
 
-        if (resultProperty) {
+        const resources =
+            entry + fgts;
 
-            resultProperty.textContent =
+
+        if (financingValue) {
+
+            financingValue.textContent =
                 formatCurrency(
-                    property
+                    financing
                 );
 
         }
 
 
-        if (resultResources) {
+        if (entryValue) {
 
-            resultResources.textContent =
+            entryValue.textContent =
+                formatCurrency(
+                    entry
+                );
+
+        }
+
+
+        if (fgtsValueResult) {
+
+            fgtsValueResult.textContent =
+                formatCurrency(
+                    fgts
+                );
+
+        }
+
+
+        if (totalResources) {
+
+            totalResources.textContent =
                 formatCurrency(
                     resources
                 );
@@ -1091,173 +1107,76 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
-        if (financingResult) {
-
-            financingResult.textContent =
-                formatCurrency(
-                    financing
-                );
-
-        }
-
-    }
-
-
-    /* =========================
-       INICIAR CALCULADORA ZERADA
-    ========================= */
-
-    if (calcProperty) {
-
-        calcProperty.value = "";
+        return {
+            property,
+            entry,
+            fgts,
+            financing,
+            resources
+        };
 
     }
 
-
-    if (calcEntry) {
-
-        calcEntry.value = "";
-
-    }
-
-
-    if (calcFgts) {
-
-        calcFgts.value = "";
-
-    }
-
-
-    if (resultProperty) {
-
-        resultProperty.textContent =
-            "R$ 0,00";
-
-    }
-
-
-    if (resultResources) {
-
-        resultResources.textContent =
-            "R$ 0,00";
-
-    }
-
-
-    if (financingResult) {
-
-        financingResult.textContent =
-            "R$ 0,00";
-
-    }
-
-
-    /* =========================
-       ATUALIZAR CALCULADORA
-    ========================= */
 
     [
         calcProperty,
         calcEntry,
         calcFgts
-
     ].forEach(input => {
 
-        if (input) {
+        if (!input) return;
 
-            input.addEventListener(
-                "input",
-                updateCalculator
-            );
-
-        }
+        input.addEventListener(
+            "input",
+            calculateFinancing
+        );
 
     });
 
 
-    updateCalculator();
+    if (calculatorWhatsApp) {
 
-
-    /* =========================
-       WHATSAPP DA CALCULADORA
-    ========================= */
-
-    if (calcWhatsapp) {
-
-        calcWhatsapp.addEventListener(
+        calculatorWhatsApp.addEventListener(
             "click",
             () => {
 
-                const property =
-                    getValue(
-                        "calcProperty"
-                    );
-
-
-                const entry =
-                    getValue(
-                        "calcEntry"
-                    );
-
-
-                const fgts =
-                    getValue(
-                        "calcFgts"
-                    );
-
-
-                const resources =
-                    entry +
-                    fgts;
-
-
-                const financing =
-                    Math.max(
-                        0,
-                        property -
-                        resources
-                    );
+                const result =
+                    calculateFinancing();
 
 
                 const message = [
 
-                    "Olá, Diego! Fiz uma simulação inicial pelo seu site.",
+                    "Olá, Diego! Fiz uma simulação pelo seu site e gostaria de conversar.",
 
                     "",
 
                     `🏠 Valor do imóvel: ${
                         formatCurrency(
-                            property
+                            result.property
                         )
                     }`,
 
                     `💵 Entrada: ${
                         formatCurrency(
-                            entry
+                            result.entry
                         )
                     }`,
 
                     `🏦 FGTS: ${
                         formatCurrency(
-                            fgts
+                            result.fgts
                         )
                     }`,
 
-                    `💰 Recursos informados: ${
+                    `💰 Valor aproximado a financiar: ${
                         formatCurrency(
-                            resources
-                        )
-                    }`,
-
-                    `📊 Valor a financiar: ${
-                        formatCurrency(
-                            financing
+                            result.financing
                         )
                     }`,
 
                     "",
 
-                    "Gostaria de conversar sobre as condições e possibilidades para esse imóvel."
+                    "Gostaria de entender melhor as possibilidades."
 
                 ].join("\n");
 
@@ -1273,9 +1192,142 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =========================
-       INICIAR QUIZ
+       NAVEGAÇÃO SUAVE
     ========================= */
 
-    showStep(1);
+    document
+        .querySelectorAll('a[href^="#"]')
+        .forEach(link => {
+
+            link.addEventListener(
+                "click",
+                event => {
+
+                    const targetId =
+                        link.getAttribute("href");
+
+
+                    if (
+                        !targetId ||
+                        targetId === "#"
+                    ) {
+                        return;
+                    }
+
+
+                    const target =
+                        document.querySelector(
+                            targetId
+                        );
+
+
+                    if (!target) return;
+
+
+                    event.preventDefault();
+
+
+                    const headerHeight =
+                        header
+                            ?.offsetHeight || 80;
+
+
+                    const targetPosition =
+                        target.getBoundingClientRect()
+                            .top +
+                        window.scrollY -
+                        headerHeight -
+                        15;
+
+
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: "smooth"
+                    });
+
+
+                    closeMenu();
+
+                }
+            );
+
+        });
+
+
+    /* =========================
+       BOTÃO VOLTAR AO TOPO
+    ========================= */
+
+    const backToTop =
+        document.querySelector(
+            ".back-to-top"
+        );
+
+
+    if (backToTop) {
+
+        window.addEventListener(
+            "scroll",
+            () => {
+
+                backToTop.classList.toggle(
+                    "show",
+                    window.scrollY > 700
+                );
+
+            },
+            { passive: true }
+        );
+
+    }
+
+
+    /* =========================
+       REDUÇÃO DE MOVIMENTO
+    ========================= */
+
+    const reducedMotion =
+        window.matchMedia(
+            "(prefers-reduced-motion: reduce)"
+        );
+
+
+    if (reducedMotion.matches) {
+
+        document.documentElement.style
+            .scrollBehavior = "auto";
+
+    }
+
+
+    /* =========================
+       PREVENIR SUBMISSÃO
+       POR ENTER EM CAMPOS
+       DE CÁLCULO
+    ========================= */
+
+    document
+        .querySelectorAll(
+            "#calcProperty, #calcEntry, #calcFgts"
+        )
+        .forEach(input => {
+
+            input.addEventListener(
+                "keydown",
+                event => {
+
+                    if (
+                        event.key === "Enter"
+                    ) {
+
+                        event.preventDefault();
+
+                    }
+
+                }
+            );
+
+        });
+
 
 });
