@@ -1,77 +1,202 @@
 document.addEventListener("DOMContentLoaded", () => {
     const WHATSAPP_NUMBER = "5511984777871";
 
-    const formatCurrency = (value) => new Intl.NumberFormat("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    }).format(Math.max(0, Number(value) || 0));
+    /* FORMATAÇÃO DE MOEDA */
+
+    function formatCurrency(value) {
+        return new Intl.NumberFormat("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(Math.max(0, Number(value) || 0));
+    }
 
     function parseCurrency(value) {
-        if (typeof value !== "string") value = String(value ?? "");
-        const cleaned = value.trim().replace(/R\$/gi, "").replace(/\s/g, "");
-        if (!cleaned) return 0;
+        let text = String(value ?? "")
+            .trim()
+            .replace(/R\$/gi, "")
+            .replace(/\s/g, "")
+            .replace(/[^\d,.-]/g, "")
+            .replace(/-/g, "");
 
-        const normalized = cleaned.includes(",")
-            ? cleaned.replace(/\./g, "").replace(",", ".").replace(/[^\d.-]/g, "")
-            : cleaned.replace(/[^\d.-]/g, "");
+        if (!text) return 0;
 
-        return Math.max(0, Number(normalized) || 0);
+        if (text.includes(",")) {
+            const commaIndex = text.lastIndexOf(",");
+
+            const integerPart = text
+                .slice(0, commaIndex)
+                .replace(/[.,]/g, "");
+
+            const decimalPart = text
+                .slice(commaIndex + 1)
+                .replace(/\D/g, "")
+                .slice(0, 2);
+
+            text = `${integerPart || "0"}${
+                decimalPart ? "." + decimalPart : ""
+            }`;
+        } else {
+            const parts = text.split(".");
+
+            if (parts.length > 2) {
+                text = text.replace(/\./g, "");
+            } else if (parts.length === 2) {
+                const [integerPart, decimalPart] = parts;
+
+                if (
+                    decimalPart.length === 3 &&
+                    integerPart.length >= 1 &&
+                    integerPart.length <= 3
+                ) {
+                    text = integerPart + decimalPart;
+                } else if (
+                    decimalPart.length > 0 &&
+                    decimalPart.length <= 2
+                ) {
+                    text = `${integerPart || "0"}.${decimalPart}`;
+                }
+            }
+        }
+
+        const number = Number(text);
+
+        return Number.isFinite(number)
+            ? Math.max(0, number)
+            : 0;
     }
 
     function getValue(id) {
-        const field = document.getElementById(id);
-        return field ? parseCurrency(field.value) : 0;
+        const input = document.getElementById(id);
+
+        return input ? parseCurrency(input.value) : 0;
     }
 
-    function formatInputCurrency(input) {
-        if (!input) return;
-
-        const digits = input.value.replace(/\D/g, "");
-        if (!digits) {
-            input.value = "";
-            return;
-        }
-
-        input.value = formatCurrency(Number(digits));
+    function formatEditableValue(value) {
+        return Number(value).toLocaleString("pt-BR", {
+            useGrouping: true,
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+        });
     }
 
     function prepareCurrencyInput(input) {
         if (!input) return;
 
         input.type = "text";
-        input.inputMode = "numeric";
+        input.inputMode = "decimal";
         input.autocomplete = "off";
 
-        if (input.value.trim()) formatInputCurrency(input);
+        input.addEventListener("focus", () => {
+            if (!input.value.trim()) return;
 
-        input.addEventListener("input", () => formatInputCurrency(input));
-    }
+            input.value = formatEditableValue(
+                parseCurrency(input.value)
+            );
 
-    function formatPhone(input) {
-        if (!input) return;
+            const position = input.value.length;
+            input.setSelectionRange(position, position);
+        });
 
-        const digits = input.value.replace(/\D/g, "").slice(0, 11);
+        input.addEventListener("input", () => {
+            const original = input.value;
+            const cursor = input.selectionStart ?? original.length;
+            const prefix = original.slice(0, cursor);
 
-        if (digits.length <= 2) {
-            input.value = digits ? `(${digits}` : "";
-        } else if (digits.length <= 6) {
-            input.value = `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-        } else if (digits.length <= 10) {
-            input.value = `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
-        } else {
-            input.value = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
-        }
-    }
+            const digitsBeforeCursor =
+                (prefix.match(/\d/g) || []).length;
 
-    const phoneInput = document.getElementById("clientPhone");
+            const cursorAfterComma = prefix.includes(",");
 
-    if (phoneInput) {
-        phoneInput.type = "tel";
-        phoneInput.inputMode = "numeric";
-        phoneInput.maxLength = 15;
-        phoneInput.addEventListener("input", () => formatPhone(phoneInput));
+            const decimalDigitsBeforeCursor = cursorAfterComma
+                ? (
+                    prefix
+                        .slice(prefix.lastIndexOf(",") + 1)
+                        .match(/\d/g) || []
+                ).length
+                : 0;
+
+            // Remove os pontos de milhares anteriores e conserva a vírgula.
+            const cleaned = original.replace(/[^\d,]/g, "");
+            const hasComma = cleaned.includes(",");
+            const commaIndex = cleaned.indexOf(",");
+
+            let integerDigits;
+            let decimalDigits = "";
+
+            if (hasComma) {
+                integerDigits = cleaned
+                    .slice(0, commaIndex)
+                    .replace(/\D/g, "");
+
+                decimalDigits = cleaned
+                    .slice(commaIndex + 1)
+                    .replace(/\D/g, "")
+                    .slice(0, 2);
+            } else {
+                integerDigits = cleaned.replace(/\D/g, "");
+            }
+
+            // Evita zeros desnecessários no início.
+            integerDigits = integerDigits.replace(/^0+(?=\d)/, "");
+
+            // Insere os pontos de milhares imediatamente.
+            const formattedInteger = integerDigits.replace(
+                /\B(?=(\d{3})+(?!\d))/g,
+                "."
+            );
+
+            let formatted = formattedInteger;
+
+            // Mantém a vírgula mesmo quando os centavos ainda estão vazios.
+            if (hasComma) {
+                formatted += `,${decimalDigits}`;
+            }
+
+            input.value = formatted;
+
+            // Mantém o cursor próximo da posição em que a pessoa digitava.
+            let newCursor = 0;
+
+            if (cursorAfterComma && hasComma) {
+                const newCommaIndex = formatted.indexOf(",");
+                const decimalPosition = Math.min(
+                    decimalDigitsBeforeCursor,
+                    decimalDigits.length
+                );
+
+                newCursor = newCommaIndex + 1 + decimalPosition;
+            } else {
+                let digitsFound = 0;
+
+                while (
+                    newCursor < formatted.length &&
+                    digitsFound < digitsBeforeCursor
+                ) {
+                    if (/\d/.test(formatted[newCursor])) {
+                        digitsFound++;
+                    }
+
+                    newCursor++;
+                }
+            }
+
+            newCursor = Math.min(newCursor, formatted.length);
+
+            input.setSelectionRange(newCursor, newCursor);
+        });
+
+        input.addEventListener("blur", () => {
+            if (!input.value.trim()) {
+                input.value = "";
+                return;
+            }
+
+            input.value = formatCurrency(
+                parseCurrency(input.value)
+            );
+        });
     }
 
     [
@@ -83,25 +208,71 @@ document.addEventListener("DOMContentLoaded", () => {
         "calcProperty",
         "calcEntry",
         "calcFgts"
-    ].forEach((id) => {
+    ].forEach(id => {
         prepareCurrencyInput(document.getElementById(id));
     });
 
+    /* TELEFONE */
+
+    function formatPhone(input) {
+        if (!input) return;
+
+        const digits = input.value
+            .replace(/\D/g, "")
+            .slice(0, 11);
+
+        if (digits.length <= 2) {
+            input.value = digits ? `(${digits}` : "";
+        } else if (digits.length <= 6) {
+            input.value =
+                `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+        } else if (digits.length <= 10) {
+            input.value =
+                `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+        } else {
+            input.value =
+                `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+        }
+    }
+
+    const phoneInput = document.getElementById("clientPhone");
+
+    if (phoneInput) {
+        phoneInput.type = "tel";
+        phoneInput.inputMode = "numeric";
+        phoneInput.maxLength = 15;
+
+        phoneInput.addEventListener("input", () => {
+            formatPhone(phoneInput);
+        });
+    }
+
+    /* WHATSAPP */
+
     function openWhatsApp(message) {
-        const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+        const url =
+            `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+
         window.open(url, "_blank", "noopener,noreferrer");
     }
+
+    /* CABEÇALHO */
 
     const header = document.querySelector(".header");
 
     function updateHeader() {
-        if (header) {
-            header.classList.toggle("scrolled", window.scrollY > 30);
-        }
+        if (!header) return;
+
+        header.classList.toggle("scrolled", window.scrollY > 30);
     }
 
-    window.addEventListener("scroll", updateHeader, { passive: true });
+    window.addEventListener("scroll", updateHeader, {
+        passive: true
+    });
+
     updateHeader();
+
+    /* MENU MOBILE */
 
     const menuButton = document.getElementById("menuButton");
     const nav = document.getElementById("nav");
@@ -129,11 +300,11 @@ document.addEventListener("DOMContentLoaded", () => {
         menuButton.setAttribute("aria-expanded", "false");
         menuButton.addEventListener("click", toggleMenu);
 
-        nav.querySelectorAll("a").forEach((link) => {
+        nav.querySelectorAll("a").forEach(link => {
             link.addEventListener("click", closeMenu);
         });
 
-        document.addEventListener("keydown", (event) => {
+        document.addEventListener("keydown", event => {
             if (event.key === "Escape") closeMenu();
         });
 
@@ -142,11 +313,18 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    const steps = [...document.querySelectorAll(".form-step")];
+    /* PRÉ-ANÁLISE */
+
+    const steps = [
+        ...document.querySelectorAll(".form-step")
+    ];
+
     const progressBar = document.getElementById("progressBar");
     const estimatedValue = document.getElementById("estimatedValue");
-    const qualificationResult = document.getElementById("qualificationResult");
-    const qualificationFinish = document.getElementById("qualificationFinish");
+    const qualificationResult =
+        document.getElementById("qualificationResult");
+    const qualificationFinish =
+        document.getElementById("qualificationFinish");
     const fgtsValue = document.getElementById("fgtsValue");
     const fgtsInput = document.getElementById("fgts");
 
@@ -161,7 +339,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     function showStep(stepNumber) {
-        steps.forEach((step) => {
+        steps.forEach(step => {
             step.classList.toggle(
                 "active",
                 Number(step.dataset.step) === Number(stepNumber)
@@ -169,7 +347,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         if (progressBar && steps.length) {
-            progressBar.style.width = `${(Number(stepNumber) / steps.length) * 100}%`;
+            progressBar.style.width =
+                `${(Number(stepNumber) / steps.length) * 100}%`;
         }
     }
 
@@ -188,7 +367,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return true;
     }
 
-    document.querySelectorAll(".form-next").forEach((button) => {
+    document.querySelectorAll(".form-next").forEach(button => {
         button.addEventListener("click", () => {
             const currentStep = Number(
                 button.closest(".form-step")?.dataset.step || 1
@@ -197,9 +376,12 @@ document.addEventListener("DOMContentLoaded", () => {
             const nextStep = Number(button.dataset.next);
 
             if (currentStep === 1) {
-                const income = document.getElementById("income");
+                const incomeInput = document.getElementById("income");
 
-                if (!validateMoneyField(income, "Informe a renda familiar mensal.")) {
+                if (!validateMoneyField(
+                    incomeInput,
+                    "Informe a renda familiar mensal."
+                )) {
                     return;
                 }
 
@@ -207,9 +389,12 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             if (currentStep === 2) {
-                const entry = document.getElementById("entry");
+                const entryInput = document.getElementById("entry");
 
-                if (!validateMoneyField(entry, "Informe o valor aproximado da entrada.")) {
+                if (!validateMoneyField(
+                    entryInput,
+                    "Informe o valor aproximado da entrada."
+                )) {
                     return;
                 }
 
@@ -222,16 +407,33 @@ document.addEventListener("DOMContentLoaded", () => {
                     return;
                 }
 
-                quiz.fgts = quiz.fgtsStatus === "sim" ? getValue("fgts") : 0;
+                quiz.fgts = quiz.fgtsStatus === "sim"
+                    ? getValue("fgts")
+                    : 0;
+
+                if (quiz.fgtsStatus === "sim" && quiz.fgts <= 0) {
+                    if (fgtsInput) {
+                        fgtsInput.focus();
+                        fgtsInput.setCustomValidity(
+                            "Informe o valor aproximado do FGTS."
+                        );
+                        fgtsInput.reportValidity();
+                        fgtsInput.setCustomValidity("");
+                    }
+
+                    return;
+                }
             }
 
             showStep(nextStep);
         });
     });
 
-    document.querySelectorAll("[data-fgts]").forEach((button) => {
+    /* ESCOLHA DO FGTS */
+
+    document.querySelectorAll("[data-fgts]").forEach(button => {
         button.addEventListener("click", () => {
-            document.querySelectorAll("[data-fgts]").forEach((item) => {
+            document.querySelectorAll("[data-fgts]").forEach(item => {
                 item.classList.remove("selected");
             });
 
@@ -251,20 +453,31 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    document.querySelectorAll("[data-first]").forEach((button) => {
+    /* PRIMEIRO IMÓVEL */
+
+    document.querySelectorAll("[data-first]").forEach(button => {
         button.addEventListener("click", () => {
-            document.querySelectorAll("[data-first]").forEach((item) => {
+            document.querySelectorAll("[data-first]").forEach(item => {
                 item.classList.remove("selected");
             });
 
             button.classList.add("selected");
             quiz.firstHome = button.dataset.first;
-            quiz.fgts = quiz.fgtsStatus === "sim" ? getValue("fgts") : 0;
+
+            quiz.fgts = quiz.fgtsStatus === "sim"
+                ? getValue("fgts")
+                : 0;
+
             quiz.estimatedFinancing = Math.round(quiz.income * 27);
-            quiz.estimatedProperty = quiz.estimatedFinancing + quiz.entry + quiz.fgts;
+
+            quiz.estimatedProperty =
+                quiz.estimatedFinancing +
+                quiz.entry +
+                quiz.fgts;
 
             if (estimatedValue) {
-                estimatedValue.textContent = formatCurrency(quiz.estimatedProperty);
+                estimatedValue.textContent =
+                    formatCurrency(quiz.estimatedProperty);
             }
 
             qualificationResult?.classList.add("show");
@@ -272,9 +485,13 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+    /* ENVIAR PRÉ-ANÁLISE */
+
     if (qualificationFinish) {
         qualificationFinish.addEventListener("click", () => {
-            quiz.fgts = quiz.fgtsStatus === "sim" ? getValue("fgts") : 0;
+            quiz.fgts = quiz.fgtsStatus === "sim"
+                ? getValue("fgts")
+                : 0;
 
             const fgtsText = quiz.fgtsStatus === "sim"
                 ? formatCurrency(quiz.fgts)
@@ -307,21 +524,45 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    /* BUSCA DE IMÓVEIS */
+
     const propertyForm = document.getElementById("propertyForm");
 
     if (propertyForm) {
-        propertyForm.addEventListener("submit", (event) => {
+        propertyForm.addEventListener("submit", event => {
             event.preventDefault();
 
             const propertyValue = getValue("propertyValue");
-            const region = document.getElementById("region")?.value.trim() || "Não informado";
-            const propertyType = document.getElementById("propertyType")?.value || "Não informado";
-            const bedrooms = document.getElementById("bedrooms")?.value || "Não informado";
-            const parking = document.getElementById("parking")?.value || "Não informado";
+
+            const region =
+                document.getElementById("region")?.value.trim() ||
+                "Não informado";
+
+            const propertyType =
+                document.getElementById("propertyType")?.value ||
+                "Não informado";
+
+            const bedrooms =
+                document.getElementById("bedrooms")?.value ||
+                "Não informado";
+
+            const parking =
+                document.getElementById("parking")?.value ||
+                "Não informado";
+
             const condo = getValue("condo");
-            const preferences = document.getElementById("preferences")?.value.trim() || "Não informado";
-            const clientName = document.getElementById("clientName")?.value.trim() || "";
-            const clientPhone = document.getElementById("clientPhone")?.value.trim() || "";
+
+            const preferences =
+                document.getElementById("preferences")?.value.trim() ||
+                "Não informado";
+
+            const clientName =
+                document.getElementById("clientName")?.value.trim() ||
+                "";
+
+            const clientPhone =
+                document.getElementById("clientPhone")?.value.trim() ||
+                "";
 
             const message = [
                 "Olá, Diego! Tudo bem?",
@@ -345,9 +586,12 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    /* CALCULADORA DE FINANCIAMENTO */
+
     const calcProperty = document.getElementById("calcProperty");
     const calcEntry = document.getElementById("calcEntry");
     const calcFgts = document.getElementById("calcFgts");
+
     const financingValue = document.getElementById("financingResult");
     const resultProperty = document.getElementById("resultProperty");
     const resultResources = document.getElementById("resultResources");
@@ -357,8 +601,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const property = getValue("calcProperty");
         const entry = getValue("calcEntry");
         const fgts = getValue("calcFgts");
-        const financing = Math.max(0, property - entry - fgts);
+
         const resources = entry + fgts;
+        const financing = Math.max(0, property - resources);
 
         if (financingValue) {
             financingValue.textContent = formatCurrency(financing);
@@ -372,14 +617,33 @@ document.addEventListener("DOMContentLoaded", () => {
             resultResources.textContent = formatCurrency(resources);
         }
 
-        return { property, entry, fgts, financing, resources };
+        return {
+            property,
+            entry,
+            fgts,
+            financing,
+            resources
+        };
     }
 
-    [calcProperty, calcEntry, calcFgts].forEach((input) => {
-        if (input) input.addEventListener("input", calculateFinancing);
+    function resetCalculator() {
+        [calcProperty, calcEntry, calcFgts].forEach(input => {
+            if (input) input.value = "";
+        });
+
+        calculateFinancing();
+    }
+
+    [calcProperty, calcEntry, calcFgts].forEach(input => {
+        if (!input) return;
+
+        input.value = "";
+        input.addEventListener("input", calculateFinancing);
     });
 
     calculateFinancing();
+
+    window.addEventListener("pageshow", resetCalculator);
 
     if (calculatorWhatsApp) {
         calculatorWhatsApp.addEventListener("click", () => {
@@ -404,20 +668,27 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    document.querySelectorAll('a[href^="#"]').forEach((link) => {
-        link.addEventListener("click", (event) => {
+    /* NAVEGAÇÃO SUAVE */
+
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+        link.addEventListener("click", event => {
             const targetId = link.getAttribute("href");
 
             if (!targetId || targetId === "#") return;
 
             const target = document.querySelector(targetId);
+
             if (!target) return;
 
             event.preventDefault();
 
             const headerHeight = header?.offsetHeight || 80;
+
             const targetPosition =
-                target.getBoundingClientRect().top + window.scrollY - headerHeight - 15;
+                target.getBoundingClientRect().top +
+                window.scrollY -
+                headerHeight -
+                15;
 
             window.scrollTo({
                 top: targetPosition,
@@ -428,15 +699,23 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    /* ACESSIBILIDADE */
+
+    const reducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+    );
 
     if (reducedMotion.matches) {
         document.documentElement.style.scrollBehavior = "auto";
     }
 
-    document.querySelectorAll("#calcProperty, #calcEntry, #calcFgts").forEach((input) => {
-        input.addEventListener("keydown", (event) => {
-            if (event.key === "Enter") event.preventDefault();
+    document.querySelectorAll(
+        "#calcProperty, #calcEntry, #calcFgts"
+    ).forEach(input => {
+        input.addEventListener("keydown", event => {
+            if (event.key === "Enter") {
+                event.preventDefault();
+            }
         });
     });
 
