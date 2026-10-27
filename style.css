@@ -1752,3 +1752,95 @@ section {
         font-size: 28px;
     }
 }
+
+/* ASSINATURA HORIZONTAL — BRENO SYSTEMS */
+.developer-credit {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 24px;
+    padding: 22px 16px 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    text-align: center;
+}
+
+.developer-credit-label {
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.developer-credit-brand {
+    color: var(--gold);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.25s ease;
+}
+
+.developer-credit-brand:hover {
+    color: var(--gold-light);
+}
+
+.developer-credit p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.developer-credit-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.developer-credit-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text);
+    font-size: 12px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.25s ease;
+}
+
+.developer-credit-links a:hover {
+    color: var(--gold-light);
+}
+
+.developer-credit-links i {
+    font-size: 14px;
+    line-height: 1;
+}
+
+.developer-credit-separator {
+    color: var(--gold);
+    font-size: 12px;
+}
+
+/* Ajustes para celulares */
+@media (max-width: 600px) {
+    .developer-credit {
+        flex-direction: column;
+        gap: 10px;
+        padding: 20px 12px 8px;
+    }
+
+    .developer-credit p {
+        font-size: 11px;
+    }
+
+    .developer-credit-links {
+        gap: 14px;
+    }
+}
