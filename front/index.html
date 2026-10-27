@@ -36,6 +36,7 @@
             </button>
         </div>
     </header>
+
     <main>
         <section class="hero" id="inicio">
             <div class="hero-background"></div>
@@ -151,6 +152,7 @@
                         representa aprovação ou promessa de crédito.
                     </small>
                 </div>
+
                 <div class="qualification-card">
                     <div class="form-progress">
                         <span id="progressBar"></span>
@@ -227,6 +229,7 @@
                         melhor quais imóveis podem fazer sentido para você.
                     </p>
                 </div>
+
                 <form class="property-form" id="propertyForm">
                     <div class="form-group">
                         <label for="propertyValue">Valor máximo</label>
@@ -295,6 +298,83 @@
                         Seus dados serão utilizados para entrar em contato
                         sobre sua busca por imóveis.
                     </p>
+                </form>
+            </div>
+        </section>
+
+        <section class="listing-section" id="anunciar-imovel">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="section-label">ANUNCIE SEU IMÓVEL</span>
+                    <h2>Quer vender ou alugar? <span>Fale com o Diego.</span></h2>
+                    <p>
+                        Conte um pouco sobre o imóvel. Você poderá selecionar fotos e vídeos
+                        aqui e anexá-los manualmente no WhatsApp antes de enviar a mensagem.
+                    </p>
+                </div>
+
+                <form class="property-form listing-form" id="listingForm">
+                    <div class="form-group">
+                        <label for="listingName">Seu nome</label>
+                        <input type="text" id="listingName" name="listingName" autocomplete="name" placeholder="Como podemos chamar você?" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="listingPhone">Seu WhatsApp</label>
+                        <input type="tel" id="listingPhone" name="listingPhone" inputmode="numeric" autocomplete="tel" placeholder="(11) 99999-9999" maxlength="15" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="listingGoal">O que deseja fazer?</label>
+                        <select id="listingGoal" name="listingGoal" required>
+                            <option value="">Selecione</option>
+                            <option value="Vender">Vender</option>
+                            <option value="Alugar">Alugar</option>
+                            <option value="Vender ou alugar">Vender ou alugar</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="listingType">Tipo de imóvel</label>
+                        <select id="listingType" name="listingType" required>
+                            <option value="">Selecione</option>
+                            <option>Apartamento</option>
+                            <option>Casa</option>
+                            <option>Sobrado</option>
+                            <option>Terreno</option>
+                            <option>Imóvel comercial</option>
+                            <option>Outro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="listingLocation">Bairro ou região</label>
+                        <input type="text" id="listingLocation" name="listingLocation" placeholder="Ex.: Itaim Paulista, Tatuapé..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="listingPrice">Valor pretendido (opcional)</label>
+                        <input type="text" id="listingPrice" name="listingPrice" inputmode="decimal" placeholder="Ex.: R$ 350.000 ou R$ 1.800/mês">
+                    </div>
+                    <div class="form-group full">
+                        <label for="listingDetails">Conte mais sobre o imóvel</label>
+                        <textarea id="listingDetails" name="listingDetails" rows="4" placeholder="Ex.: quantidade de quartos, vagas, metragem, estado do imóvel e outras informações importantes."></textarea>
+                    </div>
+                    <div class="form-group full">
+                        <label for="listingFiles">Fotos e vídeos do imóvel (opcional)</label>
+                        <input class="listing-file-input" type="file" id="listingFiles" name="listingFiles" accept="image/*,video/*" multiple aria-describedby="listingFileHelp">
+                        <small class="listing-file-help" id="listingFileHelp">
+                            Selecione até 8 arquivos de imagem ou vídeo, com no máximo 20 MB cada. Eles não serão enviados pelo site: você precisará anexá-los manualmente na conversa do WhatsApp.
+                        </small>
+                        <ul class="listing-file-list" id="listingFileList" aria-live="polite"></ul>
+                    </div>
+                    <div class="listing-consent">
+                        <p>
+                            Ao continuar, suas informações serão incluídas na mensagem do WhatsApp para que Diego possa entrar em contato sobre o imóvel. Evite enviar documentos pessoais ou informações sensíveis.
+                        </p>
+                    </div>
+                    <button class="button button-primary submit-button" type="submit">
+                        Continuar pelo WhatsApp <span>→</span>
+                    </button>
+                    <p class="form-disclaimer listing-disclaimer">
+                        O WhatsApp será aberto com os dados preenchidos. Revise a mensagem, anexe os arquivos selecionados e toque em enviar.
+                    </p>
+                    <p class="listing-error" id="listingError" role="alert" hidden></p>
                 </form>
             </div>
         </section>
@@ -498,6 +578,7 @@
                 <a href="#inicio">Início</a>
                 <a href="#qualificacao">Pré-análise</a>
                 <a href="#buscar-imovel">Encontrar imóvel</a>
+                <a href="#anunciar-imovel">Anunciar imóvel</a>
                 <a href="#conteudos">Conteúdos</a>
                 <a href="#sobre">Sobre</a>
             </div>
@@ -506,7 +587,7 @@
                 <a href="https://wa.me/5511984777871" target="_blank" rel="noopener noreferrer" class="footer-social-link">
                     <svg class="social-icon whatsapp-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                         <path d="M20.4 11.6a8.4 8.4 0 0 1-12.55 7.3L3.5 20l1.1-4.2a8.4 8.4 0 1 1 15.8-4.2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M8.2 7.6c-.25-.55-.48-.56-.72-.57h-.62c-.22 0-.57.08-.87.4-.3.33-1.15 1.12-1.15 2.72s1.18 3.16 1.34 3.38c.16.22 2.27 3.63 5.61 4.94 2.77 1.09 3.34.87 3.94.82.6-.05 1.94-.79 2.22-1.55.28-.76.28-1.42.2-1.56-.08-.14-.3-.22-.63-.39-.33-.16-1.94-.96-2.24-1.07-.3-.11-.52-.16-.74.17-.22.33-.85 1.07-1.04 1.29-.19.22-.38.25-.71.08-.33-.16-1.39-.51-2.65-1.62-.98-.86-1.83-1.92-1.83-2.25-.19-.33-.02-.51.14-.67-.14-.14.33-.38.49-.57.16-.19.22-.33.33-.55.11-.22.06-.41-.03-.57-.08-.16-.74-1.81-1.04-2.45Z" fill="currentColor" transform="translate(1.1 0) scale(.9)"/>
+                        <path d="M8.2 7.6c-.25-.55-.48-.56-.72-.57h-.62c-.22 0-.57.08-.87.4-.3.33-1.15 1.12-1.15 2.72s1.18 3.16 1.34 3.38c.16.22 2.27 3.63 5.61 4.94 2.77 1.09 3.34.87 3.94.82.6-.05 1.94-.79 2.22-1.55.28-.76.28-1.42.2-1.56-.08-.14-.3-.22-.63-.39-.22-.33-.85-1.07-1.04-1.29-.19-.22-.38-.25-.71-.08-.33-.16-1.39-.51-2.65-1.62-.98-.86-1.83-1.92-1.83-2.25-.19-.33-.02-.51.14-.67-.14-.14.33-.38.49-.57.16-.19.22-.33.33-.55.11-.22.06-.41-.03-.57-.08-.16-.74-1.81-1.04-2.45Z" fill="currentColor" transform="translate(1.1 0) scale(.9)"/>
                     </svg>
                     WhatsApp
                 </a>
@@ -535,7 +616,7 @@
     >
         <svg class="social-icon whatsapp-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path d="M20.4 11.6a8.4 8.4 0 0 1-12.55 7.3L3.5 20l1.1-4.2a8.4 8.4 0 1 1 15.8-4.2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M8.2 7.6c-.25-.55-.48-.56-.72-.57h-.62c-.22 0-.57.08-.87.4-.3.33-1.15 1.12-1.15 2.72s1.18 3.16 1.34 3.38c.16.22 2.27 3.63 5.61 4.94 2.77 1.09 3.34.87 3.94.82.6-.05 1.94-.79 2.22-1.55.28-.76.28-1.42.2-1.56-.08-.14-.3-.22-.63-.39-.33-.16-1.94-.96-2.24-1.07-.3-.11-.52-.16-.74.17-.22.33-.85 1.07-1.04 1.29-.19.22-.38.25-.71.08-.33-.16-1.39-.51-2.65-1.62-.98-.86-1.83-1.92-1.83-2.25-.19-.33-.02-.51.14-.67-.14-.19.22-.33.33-.55.11-.22.06-.41-.03-.57-.08-.16-.74-1.81-1.04-2.45Z" fill="currentColor" transform="translate(1.1 0) scale(.9)"/>
+            <path d="M8.2 7.6c-.25-.55-.48-.56-.72-.57h-.62c-.22 0-.57.08-.87.4-.3.33-1.15 1.12-1.15 2.72s1.18 3.16 1.34 3.38c.16.22 2.27 3.63 5.61 4.94 2.77 1.09 3.34.87 3.94.82.6-.05 1.94-.79 2.22-1.55.28-.76.28-1.42.2-1.56-.08-.14-.3-.22-.63-.39-.33-.16-1.94-.96-2.24-1.07-.3-.11-.52-.16-.74.17-.22.33-.85 1.07-1.04 1.29-.19.22-.38.25-.71.08-.33-.16-1.39-.51-2.65-1.62-.98-.86-1.64-1.92-1.83-2.25-.19-.33-.02-.51.14-.67-.14-.19.22-.33.33-.55.11-.22.06-.41-.03-.57-.08-.16-.74-1.81-1.04-2.45Z" fill="currentColor" transform="translate(1.1 0) scale(.9)"/>
         </svg>
     </a>
 

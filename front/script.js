@@ -69,7 +69,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function getValue(id) {
         const input = document.getElementById(id);
-
         return input ? parseCurrency(input.value) : 0;
     }
 
@@ -117,7 +116,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 ).length
                 : 0;
 
-            // Remove os pontos de milhares anteriores e conserva a vírgula.
             const cleaned = original.replace(/[^\d,]/g, "");
             const hasComma = cleaned.includes(",");
             const commaIndex = cleaned.indexOf(",");
@@ -138,10 +136,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 integerDigits = cleaned.replace(/\D/g, "");
             }
 
-            // Evita zeros desnecessários no início.
             integerDigits = integerDigits.replace(/^0+(?=\d)/, "");
 
-            // Insere os pontos de milhares imediatamente.
             const formattedInteger = integerDigits.replace(
                 /\B(?=(\d{3})+(?!\d))/g,
                 "."
@@ -149,14 +145,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
             let formatted = formattedInteger;
 
-            // Mantém a vírgula mesmo quando os centavos ainda estão vazios.
             if (hasComma) {
                 formatted += `,${decimalDigits}`;
             }
 
             input.value = formatted;
 
-            // Mantém o cursor próximo da posição em que a pessoa digitava.
             let newCursor = 0;
 
             if (cursorAfterComma && hasComma) {
@@ -183,7 +177,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             newCursor = Math.min(newCursor, formatted.length);
-
             input.setSelectionRange(newCursor, newCursor);
         });
 
@@ -262,7 +255,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updateHeader() {
         if (!header) return;
-
         header.classList.toggle("scrolled", window.scrollY > 30);
     }
 
@@ -665,6 +657,212 @@ document.addEventListener("DOMContentLoaded", () => {
             ].join("\n");
 
             openWhatsApp(message);
+        });
+    }
+
+    /* ANUNCIAR IMÓVEL E COMPARTILHAR ARQUIVOS */
+
+    const listingForm = document.getElementById("listingForm");
+    const listingFilesInput = document.getElementById("listingFiles");
+    const listingFileList = document.getElementById("listingFileList");
+    const listingError = document.getElementById("listingError");
+    const listingPhone = document.getElementById("listingPhone");
+    const listingPrice = document.getElementById("listingPrice");
+
+    const MAX_LISTING_FILES = 8;
+    const MAX_LISTING_FILE_SIZE = 20 * 1024 * 1024;
+
+    function showListingError(message = "") {
+        if (!listingError) return;
+
+        listingError.textContent = message;
+        listingError.hidden = !message;
+    }
+
+    function validateListingFiles(files) {
+        if (files.length > MAX_LISTING_FILES) {
+            return `Selecione no máximo ${MAX_LISTING_FILES} arquivos.`;
+        }
+
+        for (const file of files) {
+            if (
+                !file.type.startsWith("image/") &&
+                !file.type.startsWith("video/")
+            ) {
+                return `O arquivo "${file.name}" não parece ser uma imagem ou vídeo válido.`;
+            }
+
+            if (file.size > MAX_LISTING_FILE_SIZE) {
+                return `O arquivo "${file.name}" ultrapassa o limite de 20 MB. Escolha um arquivo menor.`;
+            }
+        }
+
+        return "";
+    }
+
+    function renderListingFiles() {
+        if (!listingFilesInput || !listingFileList) return;
+
+        const files = Array.from(listingFilesInput.files || []);
+        const error = validateListingFiles(files);
+
+        showListingError(error);
+        listingFileList.replaceChildren();
+
+        files.forEach(file => {
+            const item = document.createElement("li");
+
+            const sizeMb = (file.size / (1024 * 1024)).toLocaleString(
+                "pt-BR",
+                { maximumFractionDigits: 1 }
+            );
+
+            item.textContent = `${file.name} — ${sizeMb} MB`;
+            listingFileList.appendChild(item);
+        });
+    }
+
+    if (listingFilesInput) {
+        listingFilesInput.addEventListener("change", renderListingFiles);
+    }
+
+    if (listingPhone) {
+        listingPhone.type = "tel";
+        listingPhone.inputMode = "numeric";
+        listingPhone.maxLength = 15;
+
+        listingPhone.addEventListener("input", () => {
+            formatPhone(listingPhone);
+        });
+    }
+
+    if (listingPrice) {
+        listingPrice.addEventListener("blur", () => {
+            if (!listingPrice.value.trim()) return;
+
+            listingPrice.value = formatCurrency(
+                parseCurrency(listingPrice.value)
+            );
+        });
+    }
+
+    if (listingForm) {
+        listingForm.addEventListener("submit", async event => {
+            event.preventDefault();
+            showListingError("");
+
+            const files = Array.from(listingFilesInput?.files || []);
+            const fileError = validateListingFiles(files);
+
+            if (fileError) {
+                showListingError(fileError);
+                listingFilesInput?.focus();
+                return;
+            }
+
+            const name =
+                document.getElementById("listingName")?.value.trim() ||
+                "Não informado";
+
+            const phone =
+                listingPhone?.value.trim() ||
+                "Não informado";
+
+            const goal =
+                document.getElementById("listingGoal")?.value ||
+                "Não informado";
+
+            const type =
+                document.getElementById("listingType")?.value ||
+                "Não informado";
+
+            const location =
+                document.getElementById("listingLocation")?.value.trim() ||
+                "Não informado";
+
+            const price =
+                listingPrice?.value.trim() ||
+                "Não informado";
+
+            const details =
+                document.getElementById("listingDetails")?.value.trim() ||
+                "Não informado";
+
+            const filesText = files.length
+                ? files.map((file, index) =>
+                    `${index + 1}. ${file.name}`
+                ).join("\n")
+                : "Nenhum arquivo selecionado.";
+
+            const message = [
+                "Olá, Diego! Tudo bem?",
+                "Gostaria de conversar sobre a divulgação de um imóvel.",
+                "",
+                "*INFORMAÇÕES DO IMÓVEL*",
+                `Nome: ${name}`,
+                `Meu WhatsApp: ${phone}`,
+                `Objetivo: ${goal}`,
+                `Tipo de imóvel: ${type}`,
+                `Bairro/região: ${location}`,
+                `Valor pretendido: ${price}`,
+                `Detalhes: ${details}`,
+                "",
+                files.length
+                    ? `*Fotos e vídeos selecionados (${files.length}):*`
+                    : "Nenhum arquivo selecionado.",
+                filesText,
+                "",
+                "Enviado pelo site Diego Santana Imóveis."
+            ].join("\n");
+
+            /*
+             * Tenta compartilhar a mensagem e os arquivos juntos.
+             * Em aparelhos compatíveis, o usuário escolhe o WhatsApp
+             * na janela de compartilhamento do sistema.
+             */
+
+            if (
+                files.length > 0 &&
+                navigator.share &&
+                navigator.canShare
+            ) {
+                try {
+                    const shareData = {
+                        title: "Anunciar imóvel — Diego Santana Imóveis",
+                        text: message,
+                        files: files
+                    };
+
+                    if (navigator.canShare({ files: files })) {
+                        await navigator.share(shareData);
+                        return;
+                    }
+                } catch (error) {
+                    if (error && error.name === "AbortError") {
+                        return;
+                    }
+
+                    console.warn(
+                        "Não foi possível compartilhar os arquivos diretamente:",
+                        error
+                    );
+                }
+            }
+
+            /*
+             * Alternativa para navegadores sem compartilhamento de arquivos.
+             * O link wa.me não permite anexar arquivos automaticamente.
+             */
+
+            const fallbackMessage = files.length
+                ? [
+                    message,
+                    "",
+                    "Por favor, anexe nesta conversa as fotos e os vídeos selecionados no site."
+                ].join("\n")
+                : message;
+
+            openWhatsApp(fallbackMessage);
         });
     }
 

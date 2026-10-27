@@ -600,6 +600,7 @@ section {
         opacity: 0;
         transform: translateX(10px);
     }
+
     to {
         opacity: 1;
         transform: translateX(0);
@@ -1514,5 +1515,97 @@ section {
         height: 52px;
         right: 18px;
         bottom: 18px;
+    }
+}
+
+/* ANUNCIE SEU IMÓVEL */
+
+.listing-section {
+    padding: 110px 0;
+    background:
+        radial-gradient(circle at 8% 20%, rgba(200, 155, 74, 0.06), transparent 30%),
+        var(--navy-light);
+}
+
+.listing-form {
+    margin-top: 42px;
+}
+
+.listing-file-input {
+    height: auto !important;
+    min-height: 52px;
+    padding: 12px !important;
+    color: var(--text);
+}
+
+.listing-file-input::file-selector-button {
+    margin-right: 12px;
+    padding: 9px 12px;
+    border: 1px solid rgba(200, 155, 74, 0.45);
+    background: var(--gold-soft);
+    color: var(--gold-light);
+    font: inherit;
+    cursor: pointer;
+}
+
+.listing-file-help {
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+.listing-file-list {
+    display: grid;
+    gap: 7px;
+    margin-top: 8px;
+    list-style: none;
+}
+
+.listing-file-list li {
+    padding: 9px 12px;
+    overflow-wrap: anywhere;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.025);
+    color: var(--text);
+    font-size: 12px;
+}
+
+.listing-consent,
+.listing-disclaimer,
+.listing-error {
+    grid-column: 1 / -1;
+}
+
+.listing-consent {
+    padding: 15px 17px;
+    border-left: 2px solid var(--gold);
+    background: rgba(255, 255, 255, 0.025);
+}
+
+.listing-consent p {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.75;
+}
+
+.listing-error {
+    color: #ffb3b3;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+@media (max-width: 800px) {
+    .listing-section {
+        padding: 78px 0;
+    }
+
+    .listing-form {
+        padding: 24px 18px;
+        gap: 20px;
+    }
+
+    .listing-form .submit-button {
+        width: 100%;
+        min-width: 0;
     }
 }
