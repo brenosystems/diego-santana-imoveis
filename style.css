@@ -1,3 +1,4 @@
+
 :root {
     --navy: #0a0d16;
     --navy-light: #111724;
@@ -1107,13 +1108,6 @@ section {
     color: var(--navy);
 }
 
-.cta-container small {
-    display: block;
-    margin-top: 20px;
-    color: var(--muted);
-    font-size: 10px;
-}
-
 /* BOTÕES WHATSAPP E INSTAGRAM */
 
 .contact-buttons {
@@ -1238,7 +1232,7 @@ section {
     width: 58px;
     height: 58px;
     background: #25d366;
-    color: white;
+    color: #ffffff;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1250,11 +1244,6 @@ section {
 
 .floating-whatsapp:hover {
     transform: translateY(-5px) scale(1.05);
-}
-
-.floating-whatsapp .social-icon {
-    width: 29px;
-    height: 29px;
 }
 
 /* RESPONSIVIDADE */
@@ -1607,5 +1596,159 @@ section {
     .listing-form .submit-button {
         width: 100%;
         min-width: 0;
+    }
+}
+
+/* CORREÇÕES DOS ÍCONES DO WHATSAPP */
+
+/* Ícone dos botões de contato */
+.whatsapp-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 22px;
+    width: 22px;
+    height: 22px;
+    font-family: "Font Awesome 6 Brands";
+    font-weight: 400;
+    font-style: normal;
+    font-size: 22px;
+    line-height: 1;
+    text-align: center;
+    vertical-align: middle;
+    transform: none !important;
+}
+
+/* Botão principal de contato */
+.contact-buttons .whatsapp-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 11px;
+}
+
+.contact-buttons .whatsapp-button .whatsapp-icon {
+    color: inherit;
+}
+
+.contact-buttons .whatsapp-button > span {
+    margin-left: 2px;
+}
+
+/* Ícone do botão flutuante */
+.floating-whatsapp .whatsapp-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
+    color: #ffffff;
+    font-family: "Font Awesome 6 Brands";
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 1;
+    text-align: center;
+}
+
+/* Alinhamento do aviso de fotos e vídeos */
+.listing-upload-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+}
+
+.listing-upload-notice-icon {
+    display: flex;
+    flex: 0 0 48px;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+}
+
+.listing-upload-notice-icon svg {
+    display: block;
+    flex: 0 0 27px;
+    width: 27px;
+    height: 27px;
+}
+
+/* Responsividade dos botões e ícones */
+@media (max-width: 800px) {
+    .contact-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .contact-buttons .button,
+    .contact-buttons .whatsapp-button {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 520px) {
+    .floating-whatsapp {
+        width: 52px;
+        height: 52px;
+        right: 18px;
+        bottom: 18px;
+    }
+
+    .floating-whatsapp .whatsapp-icon {
+        flex-basis: 28px;
+        width: 28px;
+        height: 28px;
+        font-size: 28px;
+    }
+
+    .listing-upload-notice {
+        gap: 10px;
+    }
+
+    .listing-upload-notice-icon {
+        flex-basis: 40px;
+        width: 40px;
+        height: 40px;
+    }
+
+    .listing-upload-notice-icon svg {
+        flex-basis: 24px;
+        width: 24px;
+        height: 24px;
+    }
+}
+
+/* ÍCONE OFICIAL DO WHATSAPP NO AVISO */
+.listing-upload-notice-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 48px;
+    width: 48px;
+    height: 48px;
+    color: var(--gold);
+}
+
+.listing-upload-notice-icon .fa-whatsapp {
+    display: inline-block;
+    font-family: "Font Awesome 6 Brands";
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 1;
+    color: var(--gold);
+    transform: none;
+}
+
+@media (max-width: 600px) {
+    .listing-upload-notice-icon {
+        flex-basis: 40px;
+        width: 40px;
+        height: 40px;
+    }
+
+    .listing-upload-notice-icon .fa-whatsapp {
+        font-size: 28px;
     }
 }
