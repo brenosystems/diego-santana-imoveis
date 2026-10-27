@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", () => {
     const WHATSAPP_NUMBER = "5511984777871";
 
@@ -788,12 +789,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.getElementById("listingDetails")?.value.trim() ||
                 "Não informado";
 
-            const filesText = files.length
-                ? files.map((file, index) =>
-                    `${index + 1}. ${file.name}`
-                ).join("\n")
-                : "Nenhum arquivo selecionado.";
-
+            /*
+             * A mensagem contém apenas os dados preenchidos no formulário.
+             * Os nomes dos arquivos não são adicionados ao texto do WhatsApp.
+             */
             const message = [
                 "Olá, Diego! Tudo bem?",
                 "Gostaria de conversar sobre a divulgação de um imóvel.",
@@ -807,62 +806,48 @@ document.addEventListener("DOMContentLoaded", () => {
                 `Valor pretendido: ${price}`,
                 `Detalhes: ${details}`,
                 "",
-                files.length
-                    ? `*Fotos e vídeos selecionados (${files.length}):*`
-                    : "Nenhum arquivo selecionado.",
-                filesText,
-                "",
                 "Enviado pelo site Diego Santana Imóveis."
             ].join("\n");
 
-            /*
-             * Tenta compartilhar a mensagem e os arquivos juntos.
-             * Em aparelhos compatíveis, o usuário escolhe o WhatsApp
-             * na janela de compartilhamento do sistema.
-             */
+            if (files.length > 0) {
+                const supportsFileShare =
+                    typeof navigator.share === "function" &&
+                    typeof navigator.canShare === "function" &&
+                    navigator.canShare({ files });
 
-            if (
-                files.length > 0 &&
-                navigator.share &&
-                navigator.canShare
-            ) {
-                try {
-                    const shareData = {
-                        title: "Anunciar imóvel — Diego Santana Imóveis",
-                        text: message,
-                        files: files
-                    };
+                if (supportsFileShare) {
+                    try {
+                        await navigator.share({
+                            title: "Anunciar imóvel — Diego Santana Imóveis",
+                            text: message,
+                            files
+                        });
 
-                    if (navigator.canShare({ files: files })) {
-                        await navigator.share(shareData);
                         return;
-                    }
-                } catch (error) {
-                    if (error && error.name === "AbortError") {
-                        return;
-                    }
+                    } catch (error) {
+                        if (error && error.name === "AbortError") {
+                            return;
+                        }
 
-                    console.warn(
-                        "Não foi possível compartilhar os arquivos diretamente:",
-                        error
-                    );
+                        console.warn(
+                            "O compartilhamento de arquivos não foi concluído:",
+                            error
+                        );
+                    }
                 }
+
+                /*
+                 * Um link wa.me não consegue anexar arquivos automaticamente.
+                 * Se o navegador não oferecer compartilhamento nativo,
+                 * abre-se o WhatsApp com a mensagem e orienta-se o usuário
+                 * a anexar os arquivos manualmente.
+                 */
+                showListingError(
+                    "Este navegador não permite enviar os arquivos selecionados diretamente. O WhatsApp será aberto com a mensagem; anexe as fotos e os vídeos manualmente antes de enviar."
+                );
             }
 
-            /*
-             * Alternativa para navegadores sem compartilhamento de arquivos.
-             * O link wa.me não permite anexar arquivos automaticamente.
-             */
-
-            const fallbackMessage = files.length
-                ? [
-                    message,
-                    "",
-                    "Por favor, anexe nesta conversa as fotos e os vídeos selecionados no site."
-                ].join("\n")
-                : message;
-
-            openWhatsApp(fallbackMessage);
+            openWhatsApp(message);
         });
     }
 
