@@ -247,7 +247,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const url =
             `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 
-        window.open(url, "_blank", "noopener,noreferrer");
+        window.location.href = url;
     }
 
     /* CABEÇALHO */
@@ -661,7 +661,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    /* ANUNCIAR IMÓVEL E COMPARTILHAR ARQUIVOS */
+    /* ANUNCIAR IMÓVEL */
 
     const listingForm = document.getElementById("listingForm");
     const listingFilesInput = document.getElementById("listingFiles");
@@ -738,17 +738,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (listingPrice) {
-        listingPrice.addEventListener("blur", () => {
-            if (!listingPrice.value.trim()) return;
-
-            listingPrice.value = formatCurrency(
-                parseCurrency(listingPrice.value)
-            );
-        });
+        prepareCurrencyInput(listingPrice);
     }
 
     if (listingForm) {
-        listingForm.addEventListener("submit", async event => {
+        listingForm.addEventListener("submit", event => {
             event.preventDefault();
             showListingError("");
 
@@ -789,10 +783,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.getElementById("listingDetails")?.value.trim() ||
                 "Não informado";
 
-            /*
-             * A mensagem contém apenas os dados preenchidos no formulário.
-             * Os nomes dos arquivos não são adicionados ao texto do WhatsApp.
-             */
             const message = [
                 "Olá, Diego! Tudo bem?",
                 "Gostaria de conversar sobre a divulgação de um imóvel.",
@@ -810,40 +800,8 @@ document.addEventListener("DOMContentLoaded", () => {
             ].join("\n");
 
             if (files.length > 0) {
-                const supportsFileShare =
-                    typeof navigator.share === "function" &&
-                    typeof navigator.canShare === "function" &&
-                    navigator.canShare({ files });
-
-                if (supportsFileShare) {
-                    try {
-                        await navigator.share({
-                            title: "Anunciar imóvel — Diego Santana Imóveis",
-                            text: message,
-                            files
-                        });
-
-                        return;
-                    } catch (error) {
-                        if (error && error.name === "AbortError") {
-                            return;
-                        }
-
-                        console.warn(
-                            "O compartilhamento de arquivos não foi concluído:",
-                            error
-                        );
-                    }
-                }
-
-                /*
-                 * Um link wa.me não consegue anexar arquivos automaticamente.
-                 * Se o navegador não oferecer compartilhamento nativo,
-                 * abre-se o WhatsApp com a mensagem e orienta-se o usuário
-                 * a anexar os arquivos manualmente.
-                 */
                 showListingError(
-                    "Este navegador não permite enviar os arquivos selecionados diretamente. O WhatsApp será aberto com a mensagem; anexe as fotos e os vídeos manualmente antes de enviar."
+                    "O WhatsApp será aberto com os dados do imóvel. Para enviar as fotos e os vídeos, anexe os arquivos manualmente na conversa do Diego."
                 );
             }
 
