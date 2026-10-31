@@ -18,9 +18,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
 
-    <!-- ÍCONES OFICIAIS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-
     <link rel="stylesheet" href="style.css">
 
     <style>
@@ -342,7 +340,7 @@
 
                         <div class="money-input">
                             <span>R$</span>
-                            <input type="number" id="income" placeholder="0" min="0">
+                            <input type="text" id="income" inputmode="numeric" autocomplete="off" placeholder="0">
                         </div>
 
                         <button type="button" class="form-next" data-next="2">
@@ -361,7 +359,7 @@
 
                         <div class="money-input">
                             <span>R$</span>
-                            <input type="number" id="entry" placeholder="0" min="0">
+                            <input type="text" id="entry" inputmode="numeric" autocomplete="off" placeholder="0">
                         </div>
 
                         <button type="button" class="form-next" data-next="3">
@@ -389,7 +387,7 @@
 
                             <div class="money-input">
                                 <span>R$</span>
-                                <input type="number" id="fgts" placeholder="0" min="0">
+                                <input type="text" id="fgts" inputmode="numeric" autocomplete="off" placeholder="0">
                             </div>
                         </div>
 
@@ -456,7 +454,7 @@
 
                         <div class="input-wrapper">
                             <span>R$</span>
-                            <input type="number" id="propertyValue" placeholder="450000" min="0">
+                            <input type="text" id="propertyValue" inputmode="numeric" autocomplete="off" placeholder="450.000">
                         </div>
                     </div>
 
@@ -504,7 +502,7 @@
 
                         <div class="input-wrapper">
                             <span>R$</span>
-                            <input type="number" id="condo" placeholder="1000" min="0">
+                            <input type="text" id="condo" inputmode="numeric" autocomplete="off" placeholder="1.000">
                         </div>
                     </div>
 
@@ -521,12 +519,12 @@
                     <div class="form-contact">
                         <div>
                             <label for="clientName">Seu nome</label>
-                            <input type="text" id="clientName" placeholder="Seu nome" required>
+                            <input type="text" id="clientName" placeholder="Seu nome" autocomplete="name" required>
                         </div>
 
                         <div>
                             <label for="clientPhone">WhatsApp</label>
-                            <input type="tel" id="clientPhone" placeholder="(11) 99999-9999" required>
+                            <input type="tel" id="clientPhone" placeholder="(11) 99999-9999" inputmode="numeric" autocomplete="tel" maxlength="15" required>
                         </div>
                     </div>
 
@@ -652,32 +650,30 @@
                         ></textarea>
                     </div>
 
-                   
-<!-- AVISO SOBRE FOTOS E VÍDEOS -->
-<div class="listing-upload-notice" role="note">
+                    <!-- AVISO SOBRE FOTOS E VÍDEOS -->
+                    <div class="listing-upload-notice" role="note">
 
-    <div class="listing-upload-notice-icon">
-        <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
-    </div>
+                        <div class="listing-upload-notice-icon">
+                            <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+                        </div>
 
-    <div class="listing-upload-notice-content">
-        <h3>Fotos e vídeos do imóvel</h3>
+                        <div class="listing-upload-notice-content">
+                            <h3>Fotos e vídeos do imóvel</h3>
 
-        <p>
-            Para sua segurança e para facilitar o envio
-            de arquivos maiores, anexe as fotos e os vídeos
-            diretamente na conversa do WhatsApp com o Diego
-            depois de preencher o formulário.
-        </p>
+                            <p>
+                                Para sua segurança e para facilitar o envio
+                                de arquivos maiores, anexe as fotos e os vídeos
+                                diretamente na conversa do WhatsApp com o Diego
+                                depois de preencher o formulário.
+                            </p>
 
-        <span>
-            O site envia apenas as informações preenchidas.
-            Nenhuma foto ou vídeo será carregado ou armazenado por ele.
-        </span>
-    </div>
+                            <span>
+                                O site envia apenas as informações preenchidas.
+                                Nenhuma foto ou vídeo será carregado ou armazenado por ele.
+                            </span>
+                        </div>
 
-</div>
-
+                    </div>
 
                     <div class="listing-consent">
                         <p>
@@ -742,7 +738,7 @@
                             <span>R$</span>
                             <input
                                 type="text"
-                                inputmode="decimal"
+                                inputmode="numeric"
                                 id="calcProperty"
                                 placeholder="0"
                                 autocomplete="off"
@@ -757,7 +753,7 @@
                             <span>R$</span>
                             <input
                                 type="text"
-                                inputmode="decimal"
+                                inputmode="numeric"
                                 id="calcEntry"
                                 placeholder="0"
                                 autocomplete="off"
@@ -772,7 +768,7 @@
                             <span>R$</span>
                             <input
                                 type="text"
-                                inputmode="decimal"
+                                inputmode="numeric"
                                 id="calcFgts"
                                 placeholder="0"
                                 autocomplete="off"
@@ -1022,44 +1018,44 @@
             <p>© 2026 Diego Santana. Todos os direitos reservados.</p>
             <p>Site desenvolvido como projeto freelancer.</p>
         </div>
-        
-<div class="developer-credit">
-    <span class="developer-credit-label">Desenvolvido por</span>
 
-    <a
-        href="https://www.instagram.com/brenosystems/"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="developer-credit-brand"
-        aria-label="Conheça a Breno Systems no Instagram"
-    >
-        Breno Souza
-    </a>
+        <div class="developer-credit">
+            <span class="developer-credit-label">Desenvolvido por</span>
 
-    <p>Desenvolvimento web e soluções digitais</p>
+            <a
+                href="https://www.instagram.com/brenosystems/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="developer-credit-brand"
+                aria-label="Conheça a Breno Systems no Instagram"
+            >
+                Breno Souza
+            </a>
 
-    <div class="developer-credit-links">
-        <a
-            href="https://www.instagram.com/brenosystems/"
-            target="_blank"
-            rel="noopener noreferrer"
-        >
-            <i class="fa-brands fa-instagram" aria-hidden="true"></i>
-            Instagram
-        </a>
+            <p>Desenvolvimento web e soluções digitais</p>
 
-        <span class="developer-credit-separator">•</span>
+            <div class="developer-credit-links">
+                <a
+                    href="https://www.instagram.com/brenosystems/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    <i class="fa-brands fa-instagram" aria-hidden="true"></i>
+                    Instagram
+                </a>
 
-        <a
-            href="https://wa.me/5511999135024"
-            target="_blank"
-            rel="noopener noreferrer"
-        >
-            <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
-            WhatsApp
-        </a>
-    </div>
-</div>
+                <span class="developer-credit-separator">•</span>
+
+                <a
+                    href="https://wa.me/5511999135024"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+                    WhatsApp
+                </a>
+            </div>
+        </div>
 
     </footer>
 

@@ -24,6 +24,7 @@
 
 html {
     scroll-behavior: smooth;
+    scroll-padding-top: 90px;
 }
 
 body {
@@ -57,6 +58,10 @@ img {
 .container {
     width: min(100% - 48px, var(--container));
     margin: 0 auto;
+}
+
+[hidden] {
+    display: none !important;
 }
 
 /* CABEÇALHO */
@@ -151,6 +156,7 @@ img {
     width: 20px;
     height: 1px;
     background: var(--white);
+    transition: 0.3s ease;
 }
 
 /* CAPA PRINCIPAL */
@@ -651,6 +657,7 @@ section {
     background: transparent;
     color: var(--white);
     font-size: 28px;
+    min-width: 0;
 }
 
 .money-input input::placeholder {
@@ -747,7 +754,7 @@ section {
     line-height: 1.5;
 }
 
-/* FORMULÁRIO DE BUSCA */
+/* FORMULÁRIOS */
 
 .search-section {
     background: var(--navy);
@@ -767,6 +774,7 @@ section {
     display: flex;
     flex-direction: column;
     gap: 9px;
+    min-width: 0;
 }
 
 .form-group.full {
@@ -794,10 +802,28 @@ section {
     padding: 0 16px;
     height: 52px;
     transition: 0.3s ease;
+    border-radius: 0;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder,
+.form-contact input::placeholder,
+.calc-field input::placeholder {
+    color: #656b76;
+}
+
+.form-group select {
+    cursor: pointer;
+}
+
+.form-group select option {
+    background: var(--navy-light);
+    color: var(--white);
 }
 
 .form-group textarea {
     height: auto;
+    min-height: 110px;
     padding: 16px;
     resize: vertical;
 }
@@ -812,6 +838,7 @@ section {
 
 .input-wrapper {
     position: relative;
+    width: 100%;
 }
 
 .input-wrapper > span {
@@ -822,6 +849,7 @@ section {
     color: var(--gold-light);
     font-size: 12px;
     z-index: 1;
+    pointer-events: none;
 }
 
 .input-wrapper input {
@@ -839,6 +867,7 @@ section {
     display: flex;
     flex-direction: column;
     gap: 9px;
+    min-width: 0;
 }
 
 .submit-button {
@@ -851,6 +880,7 @@ section {
     grid-column: 1 / -1;
     color: var(--muted);
     font-size: 10px;
+    line-height: 1.7;
 }
 
 /* CALCULADORA */
@@ -921,6 +951,7 @@ section {
     margin-top: 8px;
     font-family: var(--font-title);
     font-size: 38px;
+    overflow-wrap: anywhere;
 }
 
 .result-line {
@@ -1246,7 +1277,234 @@ section {
     transform: translateY(-5px) scale(1.05);
 }
 
-/* RESPONSIVIDADE */
+/* ANUNCIE SEU IMÓVEL */
+
+.listing-section {
+    padding: 110px 0;
+    background:
+        radial-gradient(circle at 8% 20%, rgba(200, 155, 74, 0.06), transparent 30%),
+        var(--navy-light);
+}
+
+.listing-form {
+    margin-top: 42px;
+}
+
+.listing-upload-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    width: 100%;
+    margin: 8px 0 24px;
+    padding: 24px;
+    border: 1px solid rgba(201, 164, 92, 0.35);
+    border-radius: 14px;
+    background: rgba(201, 164, 92, 0.07);
+}
+
+.listing-upload-notice-icon {
+    display: flex;
+    flex: 0 0 48px;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    color: var(--gold);
+    border-radius: 12px;
+    background: rgba(201, 164, 92, 0.14);
+}
+
+.listing-upload-notice-icon .fa-whatsapp {
+    display: inline-block;
+    font-family: "Font Awesome 6 Brands";
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 1;
+    color: var(--gold);
+}
+
+.listing-upload-notice-content {
+    min-width: 0;
+}
+
+.listing-upload-notice-content h3 {
+    margin: 0 0 9px;
+    font-size: 17px;
+    line-height: 1.4;
+}
+
+.listing-upload-notice-content p {
+    margin: 0 0 10px;
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.listing-upload-notice-content span {
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.listing-consent,
+.listing-disclaimer,
+.listing-error {
+    grid-column: 1 / -1;
+}
+
+.listing-consent {
+    padding: 15px 17px;
+    border-left: 2px solid var(--gold);
+    background: rgba(255, 255, 255, 0.025);
+}
+
+.listing-consent p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.75;
+}
+
+.listing-disclaimer {
+    margin-top: -10px;
+}
+
+.listing-error {
+    color: #ffb3b3;
+    font-size: 13px;
+    line-height: 1.6;
+    padding: 12px 15px;
+    border: 1px solid rgba(255, 100, 100, 0.25);
+    background: rgba(255, 100, 100, 0.07);
+}
+
+/* ÍCONES DO WHATSAPP */
+
+.whatsapp-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 22px;
+    width: 22px;
+    height: 22px;
+    font-family: "Font Awesome 6 Brands";
+    font-weight: 400;
+    font-style: normal;
+    font-size: 22px;
+    line-height: 1;
+    text-align: center;
+    vertical-align: middle;
+    transform: none !important;
+}
+
+.contact-buttons .whatsapp-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 11px;
+}
+
+.contact-buttons .whatsapp-button .whatsapp-icon {
+    color: inherit;
+}
+
+.contact-buttons .whatsapp-button > span {
+    margin-left: 2px;
+}
+
+.floating-whatsapp .whatsapp-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
+    color: #ffffff;
+    font-family: "Font Awesome 6 Brands";
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 1;
+    text-align: center;
+}
+
+/* ASSINATURA — BRENO SYSTEMS */
+
+.developer-credit {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 24px;
+    padding: 22px 16px 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    text-align: center;
+}
+
+.developer-credit-label {
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.developer-credit-brand {
+    color: var(--gold);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.25s ease;
+}
+
+.developer-credit-brand:hover {
+    color: var(--gold-light);
+}
+
+.developer-credit p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.developer-credit-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.developer-credit-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text);
+    font-size: 12px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.25s ease;
+}
+
+.developer-credit-links a:hover {
+    color: var(--gold-light);
+}
+
+.developer-credit-links i {
+    font-size: 14px;
+    line-height: 1;
+}
+
+.developer-credit-separator {
+    color: var(--gold);
+    font-size: 12px;
+}
+
+/* RESPONSIVIDADE — TABLETS */
 
 @media (max-width: 1000px) {
     .nav {
@@ -1304,6 +1562,8 @@ section {
         gap: 15px;
     }
 }
+
+/* RESPONSIVIDADE — CELULARES E TABLETS */
 
 @media (max-width: 800px) {
     .container {
@@ -1449,7 +1709,23 @@ section {
         width: 100%;
         justify-content: center;
     }
+
+    .listing-section {
+        padding: 78px 0;
+    }
+
+    .listing-form {
+        padding: 24px 18px;
+        gap: 20px;
+    }
+
+    .listing-form .submit-button {
+        width: 100%;
+        min-width: 0;
+    }
 }
+
+/* RESPONSIVIDADE — CELULARES PEQUENOS */
 
 @media (max-width: 520px) {
     .hero h1 {
@@ -1505,196 +1781,6 @@ section {
         right: 18px;
         bottom: 18px;
     }
-}
-
-/* ANUNCIE SEU IMÓVEL */
-
-.listing-section {
-    padding: 110px 0;
-    background:
-        radial-gradient(circle at 8% 20%, rgba(200, 155, 74, 0.06), transparent 30%),
-        var(--navy-light);
-}
-
-.listing-form {
-    margin-top: 42px;
-}
-
-.listing-file-input {
-    height: auto !important;
-    min-height: 52px;
-    padding: 12px !important;
-    color: var(--text);
-}
-
-.listing-file-input::file-selector-button {
-    margin-right: 12px;
-    padding: 9px 12px;
-    border: 1px solid rgba(200, 155, 74, 0.45);
-    background: var(--gold-soft);
-    color: var(--gold-light);
-    font: inherit;
-    cursor: pointer;
-}
-
-.listing-file-help {
-    color: var(--muted);
-    font-size: 11px;
-    line-height: 1.7;
-}
-
-.listing-file-list {
-    display: grid;
-    gap: 7px;
-    margin-top: 8px;
-    list-style: none;
-}
-
-.listing-file-list li {
-    padding: 9px 12px;
-    overflow-wrap: anywhere;
-    border: 1px solid var(--border);
-    background: rgba(255, 255, 255, 0.025);
-    color: var(--text);
-    font-size: 12px;
-}
-
-.listing-consent,
-.listing-disclaimer,
-.listing-error {
-    grid-column: 1 / -1;
-}
-
-.listing-consent {
-    padding: 15px 17px;
-    border-left: 2px solid var(--gold);
-    background: rgba(255, 255, 255, 0.025);
-}
-
-.listing-consent p {
-    color: var(--muted);
-    font-size: 12px;
-    line-height: 1.75;
-}
-
-.listing-error {
-    color: #ffb3b3;
-    font-size: 13px;
-    line-height: 1.6;
-}
-
-@media (max-width: 800px) {
-    .listing-section {
-        padding: 78px 0;
-    }
-
-    .listing-form {
-        padding: 24px 18px;
-        gap: 20px;
-    }
-
-    .listing-form .submit-button {
-        width: 100%;
-        min-width: 0;
-    }
-}
-
-/* CORREÇÕES DOS ÍCONES DO WHATSAPP */
-
-/* Ícone dos botões de contato */
-.whatsapp-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex: 0 0 22px;
-    width: 22px;
-    height: 22px;
-    font-family: "Font Awesome 6 Brands";
-    font-weight: 400;
-    font-style: normal;
-    font-size: 22px;
-    line-height: 1;
-    text-align: center;
-    vertical-align: middle;
-    transform: none !important;
-}
-
-/* Botão principal de contato */
-.contact-buttons .whatsapp-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 11px;
-}
-
-.contact-buttons .whatsapp-button .whatsapp-icon {
-    color: inherit;
-}
-
-.contact-buttons .whatsapp-button > span {
-    margin-left: 2px;
-}
-
-/* Ícone do botão flutuante */
-.floating-whatsapp .whatsapp-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex: 0 0 30px;
-    width: 30px;
-    height: 30px;
-    color: #ffffff;
-    font-family: "Font Awesome 6 Brands";
-    font-size: 30px;
-    font-weight: 400;
-    line-height: 1;
-    text-align: center;
-}
-
-/* Alinhamento do aviso de fotos e vídeos */
-.listing-upload-notice {
-    display: flex;
-    align-items: flex-start;
-    gap: 18px;
-}
-
-.listing-upload-notice-icon {
-    display: flex;
-    flex: 0 0 48px;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-}
-
-.listing-upload-notice-icon svg {
-    display: block;
-    flex: 0 0 27px;
-    width: 27px;
-    height: 27px;
-}
-
-/* Responsividade dos botões e ícones */
-@media (max-width: 800px) {
-    .contact-buttons {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .contact-buttons .button,
-    .contact-buttons .whatsapp-button {
-        width: 100%;
-        justify-content: center;
-    }
-}
-
-@media (max-width: 520px) {
-    .floating-whatsapp {
-        width: 52px;
-        height: 52px;
-        right: 18px;
-        bottom: 18px;
-    }
 
     .floating-whatsapp .whatsapp-icon {
         flex-basis: 28px;
@@ -1704,44 +1790,11 @@ section {
     }
 
     .listing-upload-notice {
-        gap: 10px;
+        gap: 12px;
+        padding: 17px;
+        margin-bottom: 20px;
     }
 
-    .listing-upload-notice-icon {
-        flex-basis: 40px;
-        width: 40px;
-        height: 40px;
-    }
-
-    .listing-upload-notice-icon svg {
-        flex-basis: 24px;
-        width: 24px;
-        height: 24px;
-    }
-}
-
-/* ÍCONE OFICIAL DO WHATSAPP NO AVISO */
-.listing-upload-notice-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex: 0 0 48px;
-    width: 48px;
-    height: 48px;
-    color: var(--gold);
-}
-
-.listing-upload-notice-icon .fa-whatsapp {
-    display: inline-block;
-    font-family: "Font Awesome 6 Brands";
-    font-size: 32px;
-    font-weight: 400;
-    line-height: 1;
-    color: var(--gold);
-    transform: none;
-}
-
-@media (max-width: 600px) {
     .listing-upload-notice-icon {
         flex-basis: 40px;
         width: 40px;
@@ -1751,85 +1804,20 @@ section {
     .listing-upload-notice-icon .fa-whatsapp {
         font-size: 28px;
     }
-}
 
-/* ASSINATURA HORIZONTAL — BRENO SYSTEMS */
-.developer-credit {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 24px;
-    padding: 22px 16px 8px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    text-align: center;
-}
+    .listing-upload-notice-content h3 {
+        font-size: 15px;
+    }
 
-.developer-credit-label {
-    color: var(--muted);
-    font-size: 11px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-}
+    .listing-upload-notice-content p {
+        font-size: 13px;
+        line-height: 1.7;
+    }
 
-.developer-credit-brand {
-    color: var(--gold);
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-decoration: none;
-    white-space: nowrap;
-    transition: color 0.25s ease;
-}
+    .listing-upload-notice-content span {
+        font-size: 11px;
+    }
 
-.developer-credit-brand:hover {
-    color: var(--gold-light);
-}
-
-.developer-credit p {
-    margin: 0;
-    color: var(--muted);
-    font-size: 12px;
-    line-height: 1.5;
-}
-
-.developer-credit-links {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 12px;
-}
-
-.developer-credit-links a {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--text);
-    font-size: 12px;
-    text-decoration: none;
-    white-space: nowrap;
-    transition: color 0.25s ease;
-}
-
-.developer-credit-links a:hover {
-    color: var(--gold-light);
-}
-
-.developer-credit-links i {
-    font-size: 14px;
-    line-height: 1;
-}
-
-.developer-credit-separator {
-    color: var(--gold);
-    font-size: 12px;
-}
-
-/* Ajustes para celulares */
-@media (max-width: 600px) {
     .developer-credit {
         flex-direction: column;
         gap: 10px;
@@ -1842,5 +1830,40 @@ section {
 
     .developer-credit-links {
         gap: 14px;
+    }
+
+    .result-line {
+        flex-wrap: wrap;
+    }
+
+    .calculator-result > strong {
+        font-size: 30px;
+    }
+}
+
+/* ACESSIBILIDADE E INTERAÇÃO */
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid var(--gold-light);
+    outline-offset: 3px;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
     }
 }
