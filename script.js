@@ -29,6 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initializeListingForm();
     initializeCalculator();
     initializeWhatsAppLinks();
+    initializeArticleCards();
 });
 
 /* =========================================
@@ -679,6 +680,60 @@ function initializeWhatsAppLinks() {
                 "Olá, Diego! Encontrei seu site e gostaria de mais informações sobre imóveis.";
 
             openWhatsApp(message);
+        });
+    });
+}
+
+/* =========================================
+   CARDS INTERATIVOS — CONTEÚDOS
+========================================= */
+
+function initializeArticleCards() {
+    const cards = document.querySelectorAll(".article-card");
+
+    if (!cards.length) return;
+
+    function updateCardState(card, isOpen) {
+        card.classList.toggle("flipped", isOpen);
+
+        card.setAttribute("aria-pressed", String(isOpen));
+
+        const title = card.querySelector(".article-card-front h3");
+
+        const cardTitle = title
+            ? title.textContent.trim()
+            : "este conteúdo";
+
+        card.setAttribute(
+            "aria-label",
+            isOpen
+                ? `Voltar: ${cardTitle}`
+                : `Ler explicação: ${cardTitle}`
+        );
+    }
+
+    cards.forEach((card) => {
+        if (!card.querySelector(".article-card-inner")) return;
+
+        card.setAttribute("role", "button");
+        card.setAttribute("tabindex", "0");
+
+        updateCardState(card, false);
+
+        card.addEventListener("click", () => {
+            const isOpen = card.classList.contains("flipped");
+
+            updateCardState(card, !isOpen);
+        });
+
+        card.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+
+                const isOpen = card.classList.contains("flipped");
+
+                updateCardState(card, !isOpen);
+            }
         });
     });
 }
